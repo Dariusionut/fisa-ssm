@@ -8,17 +8,22 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
+
+import static javax.swing.text.html.FormSubmitEvent.MethodType.POST;
 
 /**
  * Created at 3/9/2024 by Darius
  **/
 public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
+    private static final String ENDPOINT = "/api/v1/authentication/login";
+    private static final AntPathRequestMatcher REQUEST_MATCHER = new AntPathRequestMatcher(ENDPOINT, POST.name());
 
     public AppAuthenticationFilter(final AuthenticationManager authenticationManager){
         super(authenticationManager);
+        super.setRequiresAuthenticationRequestMatcher(REQUEST_MATCHER);
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {

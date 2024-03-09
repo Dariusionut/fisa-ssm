@@ -18,6 +18,7 @@ public class AppAuthenticationManager implements AuthenticationManager {
 
     private final UserDetailsService userDetailsService;
 
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         final String username = authentication.getName();
