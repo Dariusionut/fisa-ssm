@@ -1,0 +1,9 @@
+CREATE SEQUENCE IF NOT EXISTS seq_cor;
+
+CREATE TABLE IF NOT EXISTS cor(
+    id INTEGER UNIQUE NOT NULL DEFAULT NEXTVAL('seq_cor'),
+    code VARCHAR(15),
+    description VARCHAR(65),
+
+    CONSTRAINT cor_pk_id PRIMARY KEY (id)
+);

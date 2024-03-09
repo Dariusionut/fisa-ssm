@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
+                        .failureForwardUrl("/login?error=true")
                 )
                 .logout(SecurityConfig::customizeLogout)
                 .build();
@@ -64,7 +65,7 @@ public class SecurityConfig {
         logoutConf
 //                .addLogoutHandler(PortalLogoutHandler.getInstance())
 //                .logoutSuccessHandler(PortalLogoutSuccessHandler.getInstance())
-                .logoutRequestMatcher(new AntPathRequestMatcher("/api/v1/authentication/logout"))
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .deleteCookies(JSESSIONID.value())
                 .invalidateHttpSession(true);
     }

@@ -1,6 +1,7 @@
 package ro.fisa.ssm.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AuthController {
 
     @GetMapping(path = "/login", produces = "text/html")
-    public String getLoginView(){
+    public String getLoginView(final Model model){
+
 
         return "login";
     }

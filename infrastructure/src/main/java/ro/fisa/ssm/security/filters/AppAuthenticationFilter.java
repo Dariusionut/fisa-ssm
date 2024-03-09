@@ -18,7 +18,7 @@ import static javax.swing.text.html.FormSubmitEvent.MethodType.POST;
  * Created at 3/9/2024 by Darius
  **/
 public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private static final String ENDPOINT = "/api/v1/authentication/login";
+    private static final String ENDPOINT = "/login";
     private static final AntPathRequestMatcher REQUEST_MATCHER = new AntPathRequestMatcher(ENDPOINT, POST.name());
 
     public AppAuthenticationFilter(final AuthenticationManager authenticationManager){

@@ -6,8 +6,8 @@ server:
 spring:
   flyway:
     enabled: true
-    clean-disabled: true
-    clean-on-validation-error: false
+    clean-disabled: false
+    clean-on-validation-error: true
     url: ${spring.datasource.url}
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}
