@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+
+>
+<head th:fragment="head"
+      th:with="bootstrapVersion='5.3.3'">
+    <meta charset="UTF-8">
+    <title th:text="${'Fisa-SSM'}">Fisa-SSM</title>
+    <link rel="stylesheet" th:href="@{'/webjars/bootstrap/' + ${bootstrapVersion} + '/css/bootstrap.min.css'}">
+    <script th:src="@{'/webjars/bootstrap/' + ${bootstrapVersion} + '/js/bootstrap.min.js'}"></script>
+</head>
+
+</html>

@@ -1,0 +1,39 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /fisa-ssm
+
+spring:
+  flyway:
+    enabled: true
+    clean-disabled: true
+    clean-on-validation-error: false
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    encoding: UTF-8
+    baseline-on-migrate: true
+    baseline-version: 1
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fisa-ssm
+    password: root
+    username: postgres
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: ${spring.jpa.database-platform}
+        show_sql: ${spring.jpa.show-sql}
+        format_sql: ${spring.jpa.show-sql}
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    database: postgresql
+  security:
+    user:
+      name: admin
+      password: admin
+logging:
+  level:
+    org.springframework.security: DEBUG
