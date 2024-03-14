@@ -24,7 +24,7 @@
         <java.version>17</java.version>
         <spring-modulith.version>1.1.2</spring-modulith.version>
         <org-mapstruct.version>1.5.3.Final</org-mapstruct.version>
-        <apache.poi.version>3.10-FINAL</apache.poi.version>
+        <apache.poi.version>5.2.5</apache.poi.version>
         <!--		Webjars-->
         <bootstrap.version>5.3.3</bootstrap.version>
 
