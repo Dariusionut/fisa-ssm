@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AuthController {
 
-    @GetMapping(path = "/login", produces = "text/html")
-    public String getLoginView(final Model model){
+    @GetMapping(path = "/", produces = "text/html")
+    public String getIndexView(final Model model) {
 
+        return "index";
+    }
+
+    @GetMapping(path = "/login", produces = "text/html")
+    public String getLoginView(final Model model) {
 
         return "login";
     }

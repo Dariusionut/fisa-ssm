@@ -1,0 +1,10 @@
+CREATE SEQUENCE IF NOT EXISTS seq_cor;
+
+CREATE TABLE IF NOT EXISTS job
+(
+    id      INTEGER UNIQUE     NOT NULL DEFAULT NEXTVAL('seq_cor'),
+    name    VARCHAR(65) UNIQUE NOT NULL,
+    version INTEGER            NOT NULL DEFAULT 0,
+
+    CONSTRAINT cor_pk_id PRIMARY KEY (id)
+);

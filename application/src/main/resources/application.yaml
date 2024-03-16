@@ -4,6 +4,11 @@ server:
     context-path: /fisa-ssm
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
+      enabled: true
   flyway:
     enabled: true
     clean-disabled: false

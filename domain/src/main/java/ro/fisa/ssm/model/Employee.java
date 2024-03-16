@@ -21,6 +21,7 @@ public class Employee {
     private String lastName;
     private String cnp;
     private boolean isActive;
+    private boolean hasErrors;
 
     @SuppressWarnings("unused")
     public LocalDate getDateOfBirth() {
@@ -30,7 +31,6 @@ public class Employee {
         try {
             return EmployeeUtils.extractDobFromCnp(this.cnp.trim());
         } catch (Exception e) {
-
             return null;
         }
     }

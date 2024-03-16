@@ -11,9 +11,9 @@ import ro.fisa.ssm.controller.mapper.MultipartFileMapper;
 import ro.fisa.ssm.model.AppDocument;
 import ro.fisa.ssm.model.Employee;
 import ro.fisa.ssm.port.primary.DocumentService;
+import ro.fisa.ssm.structures.DoubleAppCollection;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created at 3/14/2024 by Darius
@@ -27,9 +27,8 @@ public class DocumentController {
     private final DocumentService documentService;
 
     @PostMapping(path = "/employee-registry")
-    public ResponseEntity<List<Employee>> uploadEmployeeRegistry(@RequestPart(name = "file") MultipartFile file) throws IOException {
+    public ResponseEntity<DoubleAppCollection<Employee, Employee>> uploadEmployeeRegistry(@RequestPart(name = "file") MultipartFile file) throws IOException {
         final AppDocument document = MultipartFileMapper.INSTANCE.toAppDocument(file);
-        final List<Employee> response = this.documentService.manageEmployeeRegistry(document);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(this.documentService.saveEmployeesFromRegistry(document));
     }
 }
