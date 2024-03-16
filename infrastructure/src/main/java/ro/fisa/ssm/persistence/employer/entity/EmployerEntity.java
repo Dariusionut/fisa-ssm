@@ -3,7 +3,7 @@ package ro.fisa.ssm.persistence.employer.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import ro.fisa.ssm.persistence.parents.PrimaryEntity;
+import ro.fisa.ssm.persistence.parents.VersionedEntity;
 import ro.fisa.ssm.persistence.utils.DbConstants;
 
 /**
@@ -18,7 +18,14 @@ import ro.fisa.ssm.persistence.utils.DbConstants;
         sequenceName = DbConstants.Sequences.EMPLOYER,
         allocationSize = 1
 )
-public class EmployerEntity extends PrimaryEntity<Integer> {
+public class EmployerEntity extends VersionedEntity {
+
+    @Id
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = DbConstants.Sequences.EMPLOYER
+    )
+    protected Integer id;
 
     @Column(name = "name", nullable = false, length = DbConstants.Length.LENGTH_45)
     private String name;
@@ -33,12 +40,4 @@ public class EmployerEntity extends PrimaryEntity<Integer> {
     @Column(name = "email")
     private String email;
 
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = DbConstants.Sequences.EMPLOYER
-    )
-    @Override
-    public Integer getId() {
-        return super.getId();
-    }
 }

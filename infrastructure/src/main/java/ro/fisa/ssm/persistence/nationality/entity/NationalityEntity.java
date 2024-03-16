@@ -18,17 +18,16 @@ import ro.fisa.ssm.persistence.utils.DbConstants;
         sequenceName = DbConstants.Sequences.NATIONALITY,
         allocationSize = 1
 )
-public class NationalityEntity extends VersionedEntity<Integer> {
-
-    @Column(name = DbConstants.Column.NAME, nullable = false, length = DbConstants.Length.LENGTH_45)
-    private String name;
-
+public class NationalityEntity extends VersionedEntity {
+    @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = DbConstants.Sequences.NATIONALITY
     )
-    @Override
-    public Integer getId() {
-        return super.getId();
-    }
+    protected Integer id;
+
+    @Column(name = DbConstants.Column.NAME, nullable = false, length = DbConstants.Length.LENGTH_45)
+    private String name;
+
+
 }

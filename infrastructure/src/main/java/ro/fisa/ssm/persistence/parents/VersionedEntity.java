@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
-public class VersionedEntity<T extends Number> extends PrimaryEntity<T> {
+public class VersionedEntity{
 
     @Version
     protected Integer version;

@@ -14,19 +14,18 @@ import java.util.Collections;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class SingleAppCollection<T> {
 
     private Collection<T> content;
-    private int size;
-
-    public static <T> SingleAppCollection<T> fromCollection(Collection<T> collection) {
-
-        return new SingleAppCollection<>(collection, collection.size());
-    }
 
     public @SuppressWarnings("unused") Collection<T> getContent() {
         return Collections.unmodifiableCollection(this.content);
+    }
+
+
+    public @SuppressWarnings("unused") int getSize() {
+        return this.content.size();
     }
 
 

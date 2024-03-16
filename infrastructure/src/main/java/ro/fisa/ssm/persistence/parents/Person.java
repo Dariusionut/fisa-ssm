@@ -2,13 +2,11 @@ package ro.fisa.ssm.persistence.parents;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -17,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @MappedSuperclass
-public class Person extends VersionedEntity<Long> {
+public class Person extends VersionedEntity {
 
     @Column(name = "first_name")
     protected String firstName;
@@ -29,8 +27,6 @@ public class Person extends VersionedEntity<Long> {
     protected String email;
     @Column(name = "password")
     protected String password;
-    @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
     @Column(name = "address")
     protected String address;
 
@@ -39,9 +35,4 @@ public class Person extends VersionedEntity<Long> {
     @LastModifiedDate
     protected LocalDateTime updatedAt;
 
-
-    @Transient
-    public String fullName() {
-        return String.format("%s %s", this.lastName, this.firstName);
-    }
 }

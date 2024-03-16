@@ -1,8 +1,6 @@
 package ro.fisa.ssm.persistence.parents;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import ro.fisa.ssm.persistence.utils.DbConstants;
@@ -20,6 +18,5 @@ public class PrimaryEntity<T extends Number> {
     @Id
     @Column(name = DbConstants.Column.ID, nullable = false, unique = true)
     protected T id;
-
 
 }

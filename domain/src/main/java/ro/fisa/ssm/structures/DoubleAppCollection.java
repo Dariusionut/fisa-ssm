@@ -13,7 +13,7 @@ public class DoubleAppCollection<A, B> {
     private SingleAppCollection<B> second;
 
     public DoubleAppCollection(Collection<A> first, Collection<B> second) {
-        this.first = SingleAppCollection.fromCollection(first);
-        this.second = SingleAppCollection.fromCollection(second);
+        this.first = new SingleAppCollection<>(first);
+        this.second = new SingleAppCollection<>(second);
     }
 }
