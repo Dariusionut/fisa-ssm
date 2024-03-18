@@ -2,11 +2,9 @@ CREATE SEQUENCE IF NOT EXISTS seq_app_user;
 
 CREATE TABLE IF NOT EXISTS app_user
 (
-
     id                 BIGINT UNIQUE       NOT NULL DEFAULT NEXTVAL('seq_app_user'),
     fk_role            SMALLINT            NOT NULL DEFAULT 1,
     fk_nationality     INTEGER             NOT NULL DEFAULT 1,
-    fk_contract        BIGINT UNIQUE       NULL,
     first_name         VARCHAR(45)         NOT NULL,
     last_name          VARCHAR(45)         NOT NULL,
     cnp                VARCHAR(13) UNIQUE,
@@ -21,8 +19,7 @@ CREATE TABLE IF NOT EXISTS app_user
 
     CONSTRAINT app_user_pk_id PRIMARY KEY (id),
     CONSTRAINT app_user_fk_role FOREIGN KEY (fk_role) REFERENCES app_role (id),
-    CONSTRAINT app_user_fk_nationality FOREIGN KEY (fk_nationality) REFERENCES nationality (id),
-    CONSTRAINT app_user_fk_contract FOREIGN KEY (fk_contract) REFERENCES contract (id)
+    CONSTRAINT app_user_fk_nationality FOREIGN KEY (fk_nationality) REFERENCES nationality (id)
 );
 
 

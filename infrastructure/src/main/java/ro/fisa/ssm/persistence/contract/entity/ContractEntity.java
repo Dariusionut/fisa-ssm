@@ -3,8 +3,10 @@ package ro.fisa.ssm.persistence.contract.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import ro.fisa.ssm.persistence.employer.entity.EmployerEntity;
 import ro.fisa.ssm.persistence.job.entity.JobEntity;
-import ro.fisa.ssm.persistence.parents.VersionedEntity;
+import ro.fisa.ssm.persistence.parents.AuditableEntity;
+import ro.fisa.ssm.persistence.user.entity.UserEntity;
 import ro.fisa.ssm.persistence.utils.DbConstants;
 
 /**
@@ -19,7 +21,7 @@ import ro.fisa.ssm.persistence.utils.DbConstants;
         sequenceName = DbConstants.Sequences.CONTRACT,
         allocationSize = 1
 )
-public class ContractEntity extends VersionedEntity {
+public class ContractEntity extends AuditableEntity {
 
     @Id
     @GeneratedValue(
@@ -28,6 +30,13 @@ public class ContractEntity extends VersionedEntity {
     )
     protected Long id;
 
+    @ManyToOne(targetEntity = UserEntity.class,
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE}
+    )
+    @JoinColumn(name = "fk_employee", referencedColumnName = DbConstants.Column.ID)
+    private UserEntity employee;
+
     @ManyToOne(targetEntity = JobEntity.class,
             fetch = FetchType.LAZY,
             cascade = {CascadeType.MERGE}
@@ -35,20 +44,20 @@ public class ContractEntity extends VersionedEntity {
     @JoinColumn(name = "fk_job", referencedColumnName = DbConstants.Column.ID)
     private JobEntity job;
 
-//    @ManyToOne(targetEntity = EmployerEntity.class,
-//            fetch = FetchType.LAZY,
-//            cascade = {CascadeType.MERGE}
-//    )
-//    @JoinColumn(name = "fk_employer", referencedColumnName = DbConstants.Column.ID)
-//    private EmployerEntity employer;
+    @ManyToOne(targetEntity = EmployerEntity.class,
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE}
+    )
+    @JoinColumn(name = "fk_employer", referencedColumnName = DbConstants.Column.ID)
+    private EmployerEntity employer;
 
     @Column(name = "number")
     private String number;
-//    @Column(name = "base_salary")
-//    private Double baseSalary;
+    @Column(name = "base_salary")
+    private Double baseSalary;
     @Column(name = "fixed_term")
     private boolean fixedTerm;
-//    @Column(name = "active_status")
-//    private boolean activeStatus;
+    @Column(name = "active_status")
+    private boolean activeStatus;
 
 }

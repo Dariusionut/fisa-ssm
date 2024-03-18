@@ -3,7 +3,6 @@ package ro.fisa.ssm.persistence.job.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import ro.fisa.ssm.persistence.parents.VersionedEntity;
 import ro.fisa.ssm.persistence.utils.DbConstants;
 
 /**
@@ -18,7 +17,7 @@ import ro.fisa.ssm.persistence.utils.DbConstants;
         sequenceName = DbConstants.Sequences.JOB,
         allocationSize = 1
 )
-public class JobEntity extends VersionedEntity {
+public class JobEntity {
 
     @Id
     @GeneratedValue(

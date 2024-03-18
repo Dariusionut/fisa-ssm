@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ro.fisa.ssm.controller.mapper.MultipartFileMapper;
 import ro.fisa.ssm.model.AppDocument;
-import ro.fisa.ssm.model.Employee;
-import ro.fisa.ssm.port.primary.DocumentService;
-import ro.fisa.ssm.structures.DoubleAppCollection;
+import ro.fisa.ssm.model.Contract;
+import ro.fisa.ssm.port.primary.EmployeeRegistryService;
 
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Created at 3/14/2024 by Darius
@@ -24,11 +24,11 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class DocumentController {
 
-    private final DocumentService documentService;
+    private final EmployeeRegistryService employeeRegistryService;
 
     @PostMapping(path = "/employee-registry")
-    public ResponseEntity<DoubleAppCollection<Employee, Employee>> uploadEmployeeRegistry(@RequestPart(name = "file") MultipartFile file) throws IOException {
+    public ResponseEntity<Collection<Contract>> uploadEmployeeRegistry(@RequestPart(name = "file") MultipartFile file) throws IOException {
         final AppDocument document = MultipartFileMapper.INSTANCE.toAppDocument(file);
-        return ResponseEntity.ok(this.documentService.saveEmployeesFromRegistry(document));
+        return ResponseEntity.ok(this.employeeRegistryService.saveEmployeesFromRegistry(document));
     }
 }

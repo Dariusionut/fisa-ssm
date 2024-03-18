@@ -6,12 +6,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ro.fisa.ssm.model.AppDocument;
+import ro.fisa.ssm.utils.OptionalUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import static ro.fisa.ssm.utils.DocumentUtils.DocumentExtension.DOT_XLSX;
 
@@ -27,26 +26,18 @@ public final class ExcelUtils {
     }
 
     public static Optional<String> getCellStringValue(final Cell cell) {
-        return Optional.ofNullable(cell)
+        return OptionalUtils.getOptional(cell)
                 .filter(c -> !c.getCellType().equals(CellType.BLANK) && c.getCellType().equals(CellType.STRING))
                 .map(Cell::getStringCellValue)
                 .map(String::trim);
 
     }
 
-    public static void forEachRow(final Sheet sheet,
-                                  final int startFrom,
-                                  final Consumer<Row> consumer
-    ) {
-        final Iterator<Row> rowIterator = sheet.rowIterator();
-        while (rowIterator.hasNext()) {
-            final Row row = rowIterator.next();
-
-            if ((row.getRowNum() <= startFrom)) {
-                continue;
-            }
-            consumer.accept(row);
-        }
+    public static Optional<Double> getCellDoubleValue(final Row row, final int cellIndex) {
+        final Cell cell = row.getCell(cellIndex);
+        return OptionalUtils.getOptional(cell)
+                .filter(c -> !c.getCellType().equals(CellType.BLANK) && c.getCellType().equals(CellType.NUMERIC))
+                .map(Cell::getNumericCellValue);
     }
 
     public static boolean isRowEmpty(final Row row) {

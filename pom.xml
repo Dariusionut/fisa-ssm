@@ -24,6 +24,7 @@
         <java.version>17</java.version>
         <spring-modulith.version>1.1.2</spring-modulith.version>
         <org-mapstruct.version>1.5.3.Final</org-mapstruct.version>
+        <spring-data-commons.version>3.2.4</spring-data-commons.version>
         <apache.poi.version>5.2.5</apache.poi.version>
         <!--		Webjars-->
         <bootstrap.version>5.3.3</bootstrap.version>
@@ -32,6 +33,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-commons</artifactId>
+                <version>${spring-data-commons.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>ro.fisa-ssm</groupId>
                 <artifactId>domain</artifactId>

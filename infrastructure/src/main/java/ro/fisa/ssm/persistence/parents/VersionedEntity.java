@@ -11,8 +11,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
-public class VersionedEntity{
+public class VersionedEntity {
 
     @Version
-    protected Integer version;
+    protected int version;
 }

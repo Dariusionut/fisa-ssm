@@ -1,17 +1,17 @@
 import {DocumentGateway} from "./adapters/document/document-gateway.js";
 import {globalSpinner} from "./global-spinner.js";
+import {documentServiceInstance} from "./domain/service/document-service.js";
 
 class Application {
 
-    documentGateway;
+    documentService;
     globalSpinner;
 
     constructor() {
-        this.documentGateway = DocumentGateway.getInstance();
+        this.documentService = documentServiceInstance;
         this.globalSpinner = globalSpinner;
     }
 }
-
 
 
 export const App = new Application();

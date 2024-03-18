@@ -12,9 +12,7 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class Contract extends SimpleContract {
-    private Employee employee;
-    private Employer employer;
+public class SimpleContract extends AuditableModel<Long> {
     private Job job;
     private String number;
     private Double baseSalary;

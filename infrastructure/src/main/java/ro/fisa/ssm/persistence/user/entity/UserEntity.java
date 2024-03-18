@@ -38,19 +38,10 @@ public class UserEntity extends Person {
     )
     protected Long id;
 
-    @ManyToMany(
+    @OneToMany(
+            mappedBy = "employee",
             fetch = FetchType.LAZY,
             cascade = {CascadeType.MERGE}
-    )
-    @JoinTable(
-            schema = PUBLIC,
-            name = "app_user_contract",
-            joinColumns = {
-                    @JoinColumn(name = "fk_app_user", referencedColumnName = ID),
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "fk_contract", referencedColumnName = ID)
-            }
     )
     private List<ContractEntity> contracts;
 
@@ -74,8 +65,4 @@ public class UserEntity extends Person {
     @Column(name = "induction_accepted", nullable = false)
     private boolean inductionAccepted;
 
-    @PrePersist
-    private void prePersist() {
-        this.setCreatedAt(LocalDateTime.now());
-    }
 }

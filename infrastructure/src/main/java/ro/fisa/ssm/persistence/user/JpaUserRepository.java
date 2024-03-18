@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ro.fisa.ssm.persistence.user.entity.UserEntity;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -17,8 +18,14 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("""
                 SELECT u FROM UserEntity u
-                WHERE u.cnp = :cnpOrEmail
-                OR u.email = :cnpOrEmail
+                WHERE u.cnp = :cnp
             """)
-    Optional<UserEntity> findByCnpOrEmail(@Param("cnpOrEmail") String cnpOrEmail);
+    Optional<UserEntity> findByCnp(@Param("cnp") String cnp);
+
+    @Query("""
+            SELECT e FROM UserEntity e
+            LEFT JOIN e.role r
+            WHERE r.id = 1
+            """)
+    Collection<UserEntity> fetchEmployees();
 }

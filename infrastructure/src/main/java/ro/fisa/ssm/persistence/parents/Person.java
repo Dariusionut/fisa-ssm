@@ -4,10 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 
 /**
  * Created at 3/15/2024 by Darius
@@ -15,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @MappedSuperclass
-public class Person extends VersionedEntity {
+public class Person extends AuditableEntity {
 
     @Column(name = "first_name")
     protected String firstName;
@@ -29,10 +25,5 @@ public class Person extends VersionedEntity {
     protected String password;
     @Column(name = "address")
     protected String address;
-
-    @CreatedDate
-    protected LocalDateTime createdAt;
-    @LastModifiedDate
-    protected LocalDateTime updatedAt;
 
 }

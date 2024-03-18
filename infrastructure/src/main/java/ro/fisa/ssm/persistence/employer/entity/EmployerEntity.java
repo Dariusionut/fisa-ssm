@@ -25,19 +25,13 @@ public class EmployerEntity extends VersionedEntity {
             strategy = GenerationType.SEQUENCE,
             generator = DbConstants.Sequences.EMPLOYER
     )
-    protected Integer id;
+    protected Long id;
 
     @Column(name = "name", nullable = false, length = DbConstants.Length.LENGTH_45)
     private String name;
-    @Column(name = "cui_cif")
+    @Column(name = "cui_cif", length = DbConstants.Length.LENGTH_15)
     private String cuiCif;
 
-    @Column(name = "caen_description")
-    private String caenDescription;
-
-    @Column(name = "address")
-    private String address;
-    @Column(name = "email")
-    private String email;
-
+    @Column(name = "caen", length = DbConstants.Length.LENGTH_200)
+    private String caen;
 }

@@ -1,6 +1,10 @@
 package ro.fisa.ssm.utils;
 
+import ro.fisa.ssm.exceptions.FullNameExtractException;
+
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Created at 3/14/2024 by Darius
@@ -10,8 +14,43 @@ public final class EmployeeUtils {
     private EmployeeUtils() {
     }
 
+    public static Optional<String> getFirstName(String fullName) {
+        try {
+            final String[] fullNameArr = splitFullName(fullName);
+            if (fullNameArr.length == 2) {
+                return Optional.ofNullable(fullNameArr[1]);
+            } else {
+                return Optional.ofNullable(String.format("%s-%s", fullNameArr[1], fullNameArr[2]));
+            }
+        } catch (FullNameExtractException e) {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<String> getLastName(final String fullName) {
+        try {
+            return Optional.ofNullable(splitFullName(fullName)[0]);
+        } catch (FullNameExtractException e) {
+            return Optional.empty();
+        }
+    }
+
+    public static String[] splitFullName(final String fullName) throws FullNameExtractException {
+        try {
+            return Arrays.stream(fullName.replaceAll("[()]", "")
+                            .replace("-", " ")
+                            .split(" "))
+                    .map(String::trim)
+                    .filter(value -> !value.isEmpty())
+                    .toArray(String[]::new);
+        } catch (Exception e) {
+            throw new FullNameExtractException("");
+        }
+
+    }
+
     public static boolean isCnpValid(final String cnp) {
-        return cnp.length() == 13;
+        return cnp.length() == 13 && cnp.matches("\\d+");
     }
 
     public static LocalDate extractDobFromCnp(final String cnp) {

@@ -7,8 +7,7 @@ import lombok.ToString;
 import ro.fisa.ssm.utils.EmployeeUtils;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Created at 3/14/2024 by Darius
@@ -17,21 +16,22 @@ import java.util.List;
 @Setter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class Employee extends PrimaryModel<Long> {
+public class Employee extends AuditableModel<Long> {
 
     private Role role;
-    private List<Contract> contracts = new ArrayList<>();
     private Nationality nationality;
+    private Collection<Contract> contracts;
     private String firstName;
     private String lastName;
     private String cnp;
     private String address;
-    private boolean isActive;
+    private String password;
+    private boolean isActive = true;
     private boolean hasErrors;
     private boolean inductionAccepted;
+    private boolean isNewAdded = true;
 
-    @SuppressWarnings("unused")
-    public LocalDate getDateOfBirth() {
+    public @SuppressWarnings("unused") LocalDate getDateOfBirth() {
         if (this.cnp == null || this.cnp.isEmpty()) {
             return null;
         }

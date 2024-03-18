@@ -20,7 +20,7 @@ public class AppUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return this.jpaUserRepository.findByCnpOrEmail(username)
+        return this.jpaUserRepository.findByCnp(username)
                 .map(AppUserDetails::new)
                 .orElseThrow(AuthenticationException::new);
     }

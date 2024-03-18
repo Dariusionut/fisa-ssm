@@ -4,13 +4,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import ro.fisa.ssm.enums.ContractDuration;
 import ro.fisa.ssm.model.*;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static ro.fisa.ssm.persistence.utils.documents.ExcelUtils.*;
 
@@ -20,6 +19,9 @@ import static ro.fisa.ssm.persistence.utils.documents.ExcelUtils.*;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EmployeeRegistryUtils {
+    public static final int ROW_TO_START = 10;
+    private static final int ROW_EMPLOYEE_TABLE = 10;
+    public static final int EMPLOYER_DETAILS_CELL = 3;
 
     private static final int NAME_CELL = 2;
     private static final int CNP_CELL = 4;
@@ -29,115 +31,127 @@ public final class EmployeeRegistryUtils {
     private static final int CONTRACT_DURATION_TYPE_CELL = 10;
     private static final int JOB_NAME_CELL = 11;
     private static final int ACTIVE_CELL = 12;
+    private static final int SALARY_CELL = 13;
 
 
-    public static List<Employee> manageEmployeeRegistry(AppDocument document) throws IOException {
-        final Sheet sheet = getSheetFromDocument(document, 0);
-        return getEmployeesFromRegistry(sheet);
-
-    }
-
-    public static List<Employee> getEmployeesFromRegistry(final Sheet sheet) {
-        final List<Employee> employees = new LinkedList<>();
-
-        forEachRow(sheet, 10, row -> {
-            final Employee employee = extractPersonFromRegistryRow(row);
-            if (employee != null) {
-                employees.add(employee);
-            }
-        });
-
-        return employees;
-    }
-
-
-    public static Employee extractPersonFromRegistryRow(final Row row) {
+    public static Optional<Contract> extractEmployeeFromRegistryRow(final Row row) {
         try {
-
             if (isRowEmpty(row)) {
-                return null;
+                return Optional.empty();
             }
             final boolean activeStatus = getCellStringValue(row, ACTIVE_CELL)
                     .filter(value -> value.equalsIgnoreCase("activ"))
                     .isPresent();
             if (!activeStatus) {
-                return null;
+                return Optional.empty();
             }
-            final Employee employee = new Employee();
-            employee.setActive(activeStatus);
+            final Employee
+                    employee = new Employee();
+            final CompletableFuture<Contract> contractFuture = ContractHelper.generateAndSetContract(row, employee);
+            final CompletableFuture<Void> nameFuture = setEmployeeName(row, employee);
+            final CompletableFuture<Void> cnpFuture = setEmployeeCnp(row, employee);
+            final CompletableFuture<Void> nationalityFuture = setNationality(row, employee);
+            final CompletableFuture<Void> addressFuture = getAddress(row, employee);
 
-            setEmployeeName(row, employee);
-            setEmployeeCnp(row, employee);
-            setNationality(row, employee);
-            setAddress(row, employee);
-            generateAndSetContract(row, employee);
-
-            return employee;
-        } catch (Exception e) {
+            CompletableFuture.allOf(contractFuture, nameFuture, cnpFuture, nationalityFuture, addressFuture).join();
+            final Contract contract = contractFuture.get();
+            return Optional.of(contract);
+        } catch (ExecutionException | InterruptedException e) {
             log.error("Error at row {}", row.getRowNum());
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            return Optional.empty();
         }
     }
 
-    private static void generateAndSetContract(final Row row, Employee employee) {
-        final Contract contract = new Contract();
-
-        getCellStringValue(row, CONTRACT_NUMBER_CELL)
-                .map(String::trim)
-                .ifPresentOrElse(contract::setNumber, employee::enableErrors);
-
-        getCellStringValue(row, CONTRACT_DURATION_TYPE_CELL)
-                .map(String::trim)
-                .ifPresentOrElse(type -> {
-                    if (type.equalsIgnoreCase(ContractDuration.FIXED_TERM.value().toLowerCase())) {
-                        contract.setFixedTerm(true);
-                    } else if (type.equalsIgnoreCase(ContractDuration.NON_FIXED_TERM.value().toLowerCase())) {
-                        contract.setFixedTerm(false);
-                    } else {
-                        employee.enableErrors();
-                    }
-                }, employee::enableErrors);
-
-        getCellStringValue(row, JOB_NAME_CELL)
-                .map(String::trim)
-                .map(Job::new)
-                .ifPresentOrElse(contract::setJob, employee::enableErrors);
-        employee.getContracts().add(contract);
+    private static CompletableFuture<Void> getAddress(final Row row, final Employee
+            employee) {
+        return CompletableFuture.supplyAsync(() -> {
+            getCellStringValue(row, ADDRESS_CELL)
+                    .map(String::trim)
+                    .ifPresentOrElse(employee::setAddress, employee::enableErrors);
+            return null;
+        });
     }
 
-    private static void setAddress(final Row row, final Employee employee) {
-        getCellStringValue(row, ADDRESS_CELL)
-                .map(String::trim)
-                .ifPresentOrElse(employee::setAddress, employee::enableErrors);
+    private static CompletableFuture<Void> setNationality(final Row row, final Employee
+            employee) {
+        return CompletableFuture.supplyAsync(() -> {
+            getCellStringValue(row, NATIONALITY_CELL)
+                    .map(String::trim)
+                    .map(Nationality::new)
+                    .ifPresentOrElse(employee::setNationality, employee::enableErrors);
+            return null;
+        });
     }
 
-    private static void setNationality(final Row row, final Employee employee) {
-        getCellStringValue(row, NATIONALITY_CELL)
-                .map(String::trim)
-                .map(Nationality::new)
-                .ifPresentOrElse(employee::setNationality, employee::enableErrors);
+    private static CompletableFuture<Void> setEmployeeName(final Row row, final Employee
+            employee) {
+        return CompletableFuture.supplyAsync(() -> {
+            getCellStringValue(row, NAME_CELL)
+                    .map(FullName::new)
+                    .ifPresentOrElse(fullName -> {
+                        fullName.getFirstName()
+                                .ifPresentOrElse(employee::setFirstName, employee::enableErrors);
+                        fullName.getLastName()
+                                .ifPresentOrElse(employee::setLastName, employee::enableErrors);
+                    }, employee::enableErrors);
+            return null;
+        });
     }
 
-    private static void setEmployeeName(final Row row, final Employee employee) {
-        getCellStringValue(row, NAME_CELL)
-                .map(Fullname::new)
-                .ifPresentOrElse(fullName -> {
-                    employee.setFirstName(fullName.getFirstName());
-                    employee.setLastName(fullName.getLastName());
-                }, employee::enableErrors);
-    }
-
-    private static void setEmployeeCnp(final Row row, final Employee employee) {
-        getCellStringValue(row, CNP_CELL)
-                .ifPresentOrElse(cnp -> {
-                    employee.setCnp(cnp);
-                    if (!EmployeeUtils.isCnpValid(cnp)) {
-                        log.warn("Invalid cnp for employee = {} at row {}, cnp will be set to null!", employee.getFullName(), row.getRowNum());
+    private static CompletableFuture<Void> setEmployeeCnp(final Row row, final Employee
+            employee) {
+        return CompletableFuture.supplyAsync(() -> {
+            getCellStringValue(row, CNP_CELL)
+                    .ifPresentOrElse(cnp -> {
+                        employee.setCnp(cnp);
+                        if (!EmployeeUtils.isCnpValid(cnp)) {
+                            log.warn("Invalid cnp for employee = {} at row {}, cnp will be set to null!", employee.getFullName(), row.getRowNum());
+                            employee.setHasErrors(true);
+                        }
+                    }, () -> {
+                        log.warn("Null cnp for employee = {} at row {}, cnp will be set to null!", employee.getFullName(), row.getRowNum());
                         employee.setHasErrors(true);
-                    }
-                }, () -> {
-                    log.warn("Null cnp for employee = {} at row {}, cnp will be set to null!", employee.getFullName(), row.getRowNum());
-                    employee.setHasErrors(true);
-                });
+                    });
+            return null;
+        });
+    }
+
+    @Slf4j
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    private static class ContractHelper {
+
+        static CompletableFuture<Contract> generateAndSetContract(final Row row, Employee
+                employee) {
+            return CompletableFuture.supplyAsync(() -> {
+                final Contract employeeContract = new Contract();
+                employeeContract.setActiveStatus(true);
+                getCellStringValue(row, CONTRACT_NUMBER_CELL)
+                        .map(String::trim)
+                        .ifPresentOrElse(employeeContract::setNumber, employee::enableErrors);
+
+                getCellStringValue(row, CONTRACT_DURATION_TYPE_CELL)
+                        .map(String::trim)
+                        .ifPresentOrElse(type -> {
+                            if (type.equalsIgnoreCase(ContractDuration.FIXED_TERM.value().toLowerCase())) {
+                                employeeContract.setFixedTerm(true);
+                            } else if (type.equalsIgnoreCase(ContractDuration.NON_FIXED_TERM.value().toLowerCase())) {
+                                employeeContract.setFixedTerm(false);
+                            } else {
+                                employee.enableErrors();
+                            }
+                        }, employee::enableErrors);
+
+                getCellStringValue(row, JOB_NAME_CELL)
+                        .map(String::trim)
+                        .map(Job::new)
+                        .ifPresentOrElse(employeeContract::setJob, employee::enableErrors);
+
+                getCellDoubleValue(row, SALARY_CELL)
+                        .ifPresentOrElse(employeeContract::setBaseSalary, employee::enableErrors);
+                employeeContract.setEmployee(employee);
+                return employeeContract;
+            });
+        }
     }
 }
