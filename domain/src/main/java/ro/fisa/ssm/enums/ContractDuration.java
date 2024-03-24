@@ -18,4 +18,8 @@ public enum ContractDuration {
     public String value() {
         return value;
     }
+
+    public String lowercaseValue() {
+        return this.value().toLowerCase();
+    }
 }

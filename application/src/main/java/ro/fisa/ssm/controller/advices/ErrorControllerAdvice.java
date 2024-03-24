@@ -1,28 +1,25 @@
 package ro.fisa.ssm.controller.advices;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import ro.fisa.ssm.exceptions.AuthenticationException;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ro.fisa.ssm.controller.response.ErrorResponse;
+import ro.fisa.ssm.exceptions.NotFoundException;
 
 /**
  * Created at 3/9/2024 by Darius
  **/
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class ErrorControllerAdvice {
 
 
-    @ExceptionHandler(AuthenticationException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String exception(final AuthenticationException e, final Model model){
-        log.error("Error during authentication", e);
-        final String msg = e.getMessage();
-        model.addAttribute("errorMessage", msg);
-        return "login";
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> exception(final NotFoundException e) {
+        log.error("Not found exception = {}", e.getMessage());
+        final ErrorResponse response = new ErrorNotFoundResponse(e);
+        return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
 }

@@ -56,8 +56,17 @@ public class ContractEntity extends AuditableEntity {
     @Column(name = "base_salary")
     private Double baseSalary;
     @Column(name = "fixed_term")
-    private boolean fixedTerm;
+    private Boolean fixedTerm;
     @Column(name = "active_status")
-    private boolean activeStatus;
+    private Boolean activeStatus;
+
+    @Column(name = "has_errors")
+    private boolean hasErrors;
+
+
+    @Override
+    protected void prePersist() {
+        super.prePersist();
+    }
 
 }

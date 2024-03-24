@@ -49,12 +49,12 @@ public final class EmployeeUtils {
 
     }
 
-    public static boolean isCnpValid(final String cnp) {
+    public static boolean isRomanianCnp(final String cnp) {
         return cnp.length() == 13 && cnp.matches("\\d+");
     }
 
     public static LocalDate extractDobFromCnp(final String cnp) {
-        if (!isCnpValid(cnp)) {
+        if (!isRomanianCnp(cnp)) {
             throw new IllegalStateException("Invalid CNP length");
         }
 

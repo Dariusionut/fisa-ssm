@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ro.fisa.ssm.utils.AppStringUtils;
 import ro.fisa.ssm.utils.EmployeeUtils;
 
 import java.time.LocalDate;
@@ -32,14 +33,21 @@ public class Employee extends AuditableModel<Long> {
     private boolean isNewAdded = true;
 
     public @SuppressWarnings("unused") LocalDate getDateOfBirth() {
-        if (this.cnp == null || this.cnp.isEmpty()) {
+        if (AppStringUtils.isBlank(this.cnp)) {
             return null;
         }
         try {
             return EmployeeUtils.extractDobFromCnp(this.cnp.trim());
         } catch (Exception e) {
+            this.setHasErrors(true);
             return null;
         }
+    }
+
+    public void setName(final String name) {
+        final FullName fullName = new FullName(name);
+        fullName.getFirstName().ifPresentOrElse(this::setFirstName, this::enableErrors);
+        fullName.getLastName().ifPresentOrElse(this::setLastName, this::enableErrors);
     }
 
     public void enableErrors() {

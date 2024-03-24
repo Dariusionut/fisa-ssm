@@ -28,12 +28,12 @@ spring:
     properties:
       hibernate:
         dialect: ${spring.jpa.database-platform}
-        show_sql: ${spring.jpa.show-sql}
+#        show_sql: ${spring.jpa.show-sql}
         format_sql: ${spring.jpa.show-sql}
     open-in-view: false
     hibernate:
       ddl-auto: validate
-    show-sql: false
+    show-sql: true
     database: postgresql
   security:
     user:

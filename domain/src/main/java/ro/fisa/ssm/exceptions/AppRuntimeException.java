@@ -14,4 +14,8 @@ public class AppRuntimeException extends RuntimeException{
     public AppRuntimeException(final String message){
         super(message);
     }
+
+    public AppRuntimeException(Exception e){
+        super(e);
+    }
 }

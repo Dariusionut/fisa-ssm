@@ -11,6 +11,10 @@ public final class AppBooleanUtils {
     }
 
 
+    public static boolean isTrue(final Boolean bool) {
+        return bool != null && bool;
+    }
+
     public static <T> T ifTrueOrElse(final boolean condition,
                                      final Supplier<T> trueSupplier,
                                      final Supplier<T> falseSupplier) {

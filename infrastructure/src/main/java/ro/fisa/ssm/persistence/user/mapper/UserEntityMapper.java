@@ -15,11 +15,11 @@ public interface UserEntityMapper {
 
     UserEntityMapper INSTANCE = Mappers.getMapper(UserEntityMapper.class);
 
-    UserEntity toEntity(Employee employee);
-
-
     @Mapping(target = "contracts", source = "contracts", qualifiedByName = "toModelIgnoreEmployee")
     Employee toEmployeeModel(UserEntity userEntity);
+
+    @Mapping(target = "contracts", expression = "java(java.util.Collections.emptyList())")
+    Employee toEmployeeIgnoreContracts(UserEntity userEntity);
 
 
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ro.fisa.ssm.model.Contract;
+import ro.fisa.ssm.model.Employee;
 import ro.fisa.ssm.persistence.contract.entity.ContractEntity;
 import ro.fisa.ssm.persistence.contract.entity.JpaContractRepository;
 import ro.fisa.ssm.persistence.contract.mapper.ContractEntityMapper;
@@ -15,8 +16,10 @@ import ro.fisa.ssm.persistence.nationality.JpaNationalityRepository;
 import ro.fisa.ssm.persistence.nationality.entity.NationalityEntity;
 import ro.fisa.ssm.persistence.user.JpaUserRepository;
 import ro.fisa.ssm.persistence.user.entity.UserEntity;
+import ro.fisa.ssm.persistence.user.mapper.UserEntityMapper;
 import ro.fisa.ssm.port.secondary.EmployeeRepository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import static ro.fisa.ssm.utils.AppObjectUtils.isObjectOrPropertyBlank;
@@ -35,9 +38,16 @@ public class EmployeeRepositoryAdapter implements EmployeeRepository {
     private final JpaUserRepository jpaUserRepository;
     private final JpaEmployerRepository jpaEmployerRepository;
 
-    public Optional<Contract> findByEmployeeCnp(final String cnp) {
-        return this.jpaContractRepository.findByCnp(cnp)
-                .map(ContractEntityMapper.INSTANCE::toModel);
+
+    @Override
+    public Optional<Employee> findByCnp(String cnp) {
+        return this.jpaUserRepository.findByCnp(cnp)
+                .map(UserEntityMapper.INSTANCE::toEmployeeModel);
+    }
+
+    @Override
+    public Collection<Contract> saveAll(Collection<Contract> contracts) {
+        return contracts.stream().map(this::save).toList();
     }
 
     public Contract save(Contract employeeContractModel) {
@@ -46,7 +56,9 @@ public class EmployeeRepositoryAdapter implements EmployeeRepository {
         this.checkNationality(userEntity);
         contract.setJob(this.checkJob(contract.getJob()));
         if (contract.getEmployee().getId() == null) {
-            this.jpaUserRepository.save(userEntity);
+            this.jpaUserRepository.findByCnp(userEntity.getCnp())
+                    .map(UserEntity::getId)
+                    .ifPresentOrElse(userEntity::setId, () -> this.jpaUserRepository.save(userEntity));
         }
         final EmployerEntity employerEntity = contract.getEmployer();
         if (employerEntity != null) {

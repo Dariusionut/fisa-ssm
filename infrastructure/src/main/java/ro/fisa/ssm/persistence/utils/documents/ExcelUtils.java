@@ -2,17 +2,10 @@ package ro.fisa.ssm.persistence.utils.documents;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import ro.fisa.ssm.model.AppDocument;
 import ro.fisa.ssm.utils.OptionalUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
-
-import static ro.fisa.ssm.utils.DocumentUtils.DocumentExtension.DOT_XLSX;
 
 /**
  * Created at 3/16/2024 by Darius
@@ -54,15 +47,4 @@ public final class ExcelUtils {
         return true;
     }
 
-    public static Workbook getWorkbookFromDocument(final AppDocument document) throws IOException {
-        final String lowercaseFileName = document.getOriginalFileName().toLowerCase();
-        final InputStream inputStream = document.getInputStream();
-
-        return lowercaseFileName.endsWith(DOT_XLSX) ? new XSSFWorkbook(inputStream) : new HSSFWorkbook(inputStream);
-    }
-
-    public static Sheet getSheetFromDocument(final AppDocument document, int sheetNumber) throws IOException {
-        final Workbook wb = getWorkbookFromDocument(document);
-        return wb.getSheetAt(sheetNumber);
-    }
 }

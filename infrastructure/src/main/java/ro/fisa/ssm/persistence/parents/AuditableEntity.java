@@ -24,12 +24,12 @@ public class AuditableEntity extends VersionedEntity {
     protected LocalDateTime updatedAt;
 
     @PrePersist
-    private void prePersist() {
+    protected void prePersist() {
         this.setCreatedAt(LocalDateTime.now());
     }
 
     @PreUpdate
-    private void preUpdate() {
+    protected void preUpdate() {
         this.setUpdatedAt(LocalDateTime.now());
     }
 }
