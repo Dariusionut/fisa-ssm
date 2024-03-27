@@ -3,7 +3,7 @@ CREATE SEQUENCE seq_contract;
 CREATE TABLE contract
 (
     id            BIGINT UNIQUE NOT NULL DEFAULT NEXTVAL('seq_contract'),
-    fk_job        INTEGER       NOT NULL,
+    fk_job        BIGINT        NOT NULL,
     fk_employee   BIGINT        NOT NULL,
     fk_employer   BIGINT        NOT NULL,
     number        VARCHAR(45)   NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE contract
     fixed_term    BOOLEAN,
     active_status BOOLEAN,
     has_errors    BOOLEAN       NOT NULL DEFAULT FALSE,
-    version       INTEGER       NOT NULL DEFAULT 0,
+--     version       INTEGER       NOT NULL DEFAULT 0,
     created_at    TIMESTAMPTZ   NOT NULL DEFAULT NOW()::TIMESTAMPTZ,
     updated_at    TIMESTAMPTZ   NULL,
 

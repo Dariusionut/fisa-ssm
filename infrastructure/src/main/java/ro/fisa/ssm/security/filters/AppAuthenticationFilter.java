@@ -4,9 +4,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -18,7 +20,7 @@ import static javax.swing.text.html.FormSubmitEvent.MethodType.POST;
  * Created at 3/9/2024 by Darius
  **/
 public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private static final String ENDPOINT = "/login";
+    private static final String ENDPOINT = "/api/v1/login";
     private static final AntPathRequestMatcher REQUEST_MATCHER = new AntPathRequestMatcher(ENDPOINT, POST.name());
 
     public AppAuthenticationFilter(final AuthenticationManager authenticationManager){
@@ -27,16 +29,26 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        final String username = obtainUsername(request);
+        final String password = obtainPassword(request);
         return super.attemptAuthentication(request, response);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
+        response.setHeader(HttpHeaders.LOCATION, "/");
+        SecurityContextHolder.getContext().setAuthentication(authResult);
+//        super.successfulAuthentication(request, response, chain, authResult);
+        chain.doFilter(request, response);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        response.setHeader(HttpHeaders.LOCATION, "/login?error=true");
         super.unsuccessfulAuthentication(request, response, failed);
     }
+
+
+
+
 }

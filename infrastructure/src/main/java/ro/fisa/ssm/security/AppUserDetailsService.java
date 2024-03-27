@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ro.fisa.ssm.exceptions.AuthenticationException;
+import org.springframework.transaction.annotation.Transactional;
 import ro.fisa.ssm.persistence.user.JpaUserRepository;
 
 /**
@@ -22,6 +22,6 @@ public class AppUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return this.jpaUserRepository.findByCnp(username)
                 .map(AppUserDetails::new)
-                .orElseThrow(AuthenticationException::new);
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password"));
     }
 }

@@ -86,6 +86,6 @@ public class Contract extends SimpleContract {
         if (otherContract == null) {
             return false;
         }
-        return this.getNumber().equals(otherContract.getNumber());
+        return this.getNumber().equalsIgnoreCase(otherContract.getNumber());
     }
 }

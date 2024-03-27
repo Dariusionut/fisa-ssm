@@ -24,7 +24,7 @@ public class JobEntity {
             strategy = GenerationType.SEQUENCE,
             generator = DbConstants.Sequences.JOB
     )
-    protected Integer id;
+    protected Long id;
 
     @Column(name = DbConstants.Column.NAME, length = DbConstants.Length.LENGTH_200, unique = true, nullable = false)
     private String name;

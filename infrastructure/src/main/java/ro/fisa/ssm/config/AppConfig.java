@@ -16,6 +16,8 @@ import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 /**
  * Created at 3/9/2024 by Darius
  **/
@@ -28,10 +30,10 @@ public class AppConfig implements WebMvcConfigurer {
     @Primary
     public AsyncTaskExecutor taskExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setQueueCapacity(100);
-        executor.setMaxPoolSize(5);
-        executor.setCorePoolSize(3);
-        executor.setThreadNamePrefix("PortalAsyncThread-");
+        executor.setQueueCapacity(150);
+        executor.setMaxPoolSize(40);
+        executor.setCorePoolSize(10);
+        executor.setThreadNamePrefix("FisaSSMTaskExecutor-");
         executor.setThreadNamePrefix("AsyncThread-");
         executor.setTaskDecorator(runnable -> {
             SecurityContext context = SecurityContextHolder.getContext();
@@ -47,13 +49,14 @@ public class AppConfig implements WebMvcConfigurer {
                 }
             };
         });
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
 
         return new DelegatingSecurityContextAsyncTaskExecutor(executor);
     }
 
     @Configuration
-    static class WebConfig implements WebMvcConfigurer{
+    static class WebConfig implements WebMvcConfigurer {
         @Override
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
             registry
@@ -61,6 +64,7 @@ public class AppConfig implements WebMvcConfigurer {
                     .addResourceLocations("classpath:/static/");
         }
     }
+
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         configurer.setTaskExecutor(this.taskExecutor());

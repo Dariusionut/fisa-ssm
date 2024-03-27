@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import ro.fisa.ssm.persistence.role.entity.RoleEntity;
 import ro.fisa.ssm.persistence.user.entity.UserEntity;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -16,6 +17,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class AppUserDetails implements UserDetails {
 
+    @Serial
+    private static final long serialVersionUID = 2981621745051469607L;
     private final UserEntity user;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

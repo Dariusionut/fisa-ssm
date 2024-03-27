@@ -3,6 +3,7 @@ package ro.fisa.ssm.persistence.contract.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import ro.fisa.ssm.persistence.contract.listener.ContractEntityListener;
 import ro.fisa.ssm.persistence.employer.entity.EmployerEntity;
 import ro.fisa.ssm.persistence.job.entity.JobEntity;
 import ro.fisa.ssm.persistence.parents.AuditableEntity;
@@ -21,6 +22,7 @@ import ro.fisa.ssm.persistence.utils.DbConstants;
         sequenceName = DbConstants.Sequences.CONTRACT,
         allocationSize = 1
 )
+@EntityListeners({ContractEntityListener.class})
 public class ContractEntity extends AuditableEntity {
 
     @Id

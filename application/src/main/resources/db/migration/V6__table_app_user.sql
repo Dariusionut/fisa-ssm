@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS app_user
     updated_at         TIMESTAMPTZ         NULL,
     has_errors         BOOLEAN             NOT NULL DEFAULT FALSE,
     induction_accepted BOOLEAN             NOT NULL DEFAULT FALSE,
-    version            INTEGER             NOT NULL DEFAULT 0,
+--     version            INTEGER             NOT NULL DEFAULT 0,
 
     CONSTRAINT app_user_pk_id PRIMARY KEY (id),
     CONSTRAINT app_user_fk_role FOREIGN KEY (fk_role) REFERENCES app_role (id),

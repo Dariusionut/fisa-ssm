@@ -28,12 +28,12 @@ spring:
     properties:
       hibernate:
         dialect: ${spring.jpa.database-platform}
-#        show_sql: ${spring.jpa.show-sql}
+        #        show_sql: ${spring.jpa.show-sql}
         format_sql: ${spring.jpa.show-sql}
     open-in-view: false
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
     database: postgresql
   security:
     user:
@@ -43,3 +43,4 @@ logging:
   level:
     org.hibernate.sql: DEBUG
     org.springframework.security: DEBUG
+#    org.springframework.transaction: TRACE

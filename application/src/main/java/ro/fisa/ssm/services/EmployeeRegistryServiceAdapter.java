@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,13 +15,13 @@ import ro.fisa.ssm.exceptions.AppRuntimeException;
 import ro.fisa.ssm.model.*;
 import ro.fisa.ssm.port.primary.EmployeeRegistryService;
 import ro.fisa.ssm.port.secondary.ContractRepository;
-import ro.fisa.ssm.port.secondary.EmployeeRepository;
-import ro.fisa.ssm.port.secondary.JobRepository;
+import ro.fisa.ssm.port.secondary.EmployerRepository;
+import ro.fisa.ssm.utils.AppBooleanUtils;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 
@@ -36,23 +37,99 @@ import static ro.fisa.ssm.utils.EmployeeRegistryUtils.*;
 @Slf4j
 @RequiredArgsConstructor
 public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
-    private final EmployeeRepository employeeRepository;
+    private final EmployerRepository employerRepository;
     private final ContractRepository contractRepository;
-    private final JobRepository jobRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TaskExecutor taskExecutor;
 
     @Value("${spring.security.user.password}")
     private String initialPassword = "initialPassword";
 
+//    @Override
+//    @Transactional
+//    public Collection<Contract> saveEmployeesFromRegistry(AppDocument document) {
+//        log.info("saveEmployeesFromRegistry");
+//        try (Workbook wb = WorkbookFactory.create(document.getInputStream())) {
+//            final Sheet sheet = wb.getSheetAt(0);
+//            final Map<String, Contract> extractedContractsMap = new HashMap<>();
+//            final Map<String, Contract> extractedInactiveContractsMap = new HashMap<>();
+//            log.info("Extracting employer details");
+//            Employer employer = this.extractEmployerDetails(sheet);
+//            final Optional<Employer> employerOptional = this.employerRepository.fetchByName(employer.getName());
+//            if (employerOptional.isPresent()) {
+//                log.info("found existing employer employer = {}", employer.getName());
+//                employer = employerOptional.get();
+//            } else {
+//                log.info("Saving new employer = {}", employer.getName());
+//                employer = this.employerRepository.save(employer);
+//            }
+//            final var rowIterator = sheet.rowIterator();
+//            log.info("Extracting contract details");
+//            final AtomicReference<Employer> employerRef = new AtomicReference<>(employer);
+//            while (rowIterator.hasNext()) {
+//                final Row row = rowIterator.next();
+//                if (row.getRowNum() <= ROW_TO_START) {
+//                    continue;
+//                }
+//                if (isRowEmpty(row)) {
+//                    break;
+//                }
+//                log.info("Extracting row {}", row.getRowNum());
+//                final Employee extractEmployee = this.extractEmployee(row);
+//                extractEmployee.setPassword(this.passwordEncoder.encode(this.initialPassword));
+//                final Contract extractedContract = this.extractContract(row, extractEmployee, employerRef.get());
+//                final String contractNumber = extractedContract.getNumber();
+//                if (AppBooleanUtils.isTrue(extractedContract.getActiveStatus())) {
+//                    extractedContractsMap.put(contractNumber, extractedContract);
+//                } else {
+//                    extractedInactiveContractsMap.put(contractNumber, extractedContract);
+//                }
+//                log.info("Finished extracting row {}", row.getRowNum());
+//            }
+//            log.info("Successfully extracted {} contracts", extractedContractsMap.size());
+//            final Collection<String> newContractNumbers = extractedContractsMap.keySet();
+//            log.info("Checking existing contracts");
+//            final Collection<Contract> existingContracts = this.contractRepository.fetchAllByNumber(newContractNumbers);
+//            if (!existingContracts.isEmpty()) {
+//                log.info("Found {} existing contracts", existingContracts.size());
+//                existingContracts.parallelStream().forEach(existingContract -> {
+//                    final Contract newContract = extractedContractsMap.get(existingContract.getNumber());
+//                    if (existingContract.compare(newContract)) {
+//                        final Contract mergedContract = this.updateContract.apply(existingContract, newContract);
+//                        extractedContractsMap.put(mergedContract.getNumber(), mergedContract);
+//                    }
+//                });
+//            }
+//
+//            final Collection<Contract> contractsToSave = extractedContractsMap.values();
+//            return this.contractRepository.saveAll(contractsToSave);
+//        } catch (IOException e) {
+//            throw new AppRuntimeException(e);
+//        }
+//    }
 
     @Override
     @Transactional
     public Collection<Contract> saveEmployeesFromRegistry(AppDocument document) {
+        log.info("saveEmployeesFromRegistry");
         try (Workbook wb = WorkbookFactory.create(document.getInputStream())) {
             final Sheet sheet = wb.getSheetAt(0);
-            final List<Contract> contracts = new LinkedList<>();
-            final Employer employer = this.extractEmployerDetails(sheet);
+            final Map<String, Contract> extractedContractsMap = new HashMap<>();
+            final Map<String, Contract> extractedInactiveContractsMap = new HashMap<>();
+            log.info("Extracting employer details");
+            Employer employer = this.extractEmployerDetails(sheet);
+            final Optional<Employer> employerOptional = this.employerRepository.fetchByName(employer.getName());
+            if (employerOptional.isPresent()) {
+                log.info("found existing employer employer = {}", employer.getName());
+                employer = employerOptional.get();
+            } else {
+                log.info("Saving new employer = {}", employer.getName());
+                employer = this.employerRepository.save(employer);
+            }
             final var rowIterator = sheet.rowIterator();
+            log.info("Extracting contract details");
+            final AtomicReference<Employer> employerRef = new AtomicReference<>(employer);
+            final Collection<CompletableFuture<Void>> futures = new LinkedList<>();
             while (rowIterator.hasNext()) {
                 final Row row = rowIterator.next();
                 if (row.getRowNum() <= ROW_TO_START) {
@@ -61,24 +138,39 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
                 if (isRowEmpty(row)) {
                     break;
                 }
-                final var employee = this.extractEmployee(row);
-                final var extractedContract = this.extractContract(row, employee, employer);
-                final var contractOptional = this.contractRepository.fetchByNumber(extractedContract.getNumber());
-
-                final var mergedContract = contractOptional
-                        .map(oldContract -> this.updateContract.apply(oldContract, extractedContract))
-                        .orElseGet(() -> {
-                            employee.setPassword(this.passwordEncoder.encode(this.initialPassword));
-                            employee.setRole(ROLE_EMPLOYEE);
-                            employee.setNewAdded(true);
-
-                            return extractedContract;
-                        });
-                contracts.add(mergedContract);
-
+                final CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                    log.info("Extracting row {}", row.getRowNum());
+                    final Employee extractEmployee = this.extractEmployee(row);
+                    extractEmployee.setPassword(this.passwordEncoder.encode(this.initialPassword));
+                    final Contract extractedContract = this.extractContract(row, extractEmployee, employerRef.get());
+                    final String contractNumber = extractedContract.getNumber();
+                    if (AppBooleanUtils.isTrue(extractedContract.getActiveStatus())) {
+                        extractedContractsMap.put(contractNumber, extractedContract);
+                    } else {
+                        extractedInactiveContractsMap.put(contractNumber, extractedContract);
+                    }
+                    log.info("Finished extracting row {}", row.getRowNum());
+                }, this.taskExecutor);
+                futures.add(future);
             }
-            log.info("Successfully managed {} contracts", contracts.size());
-            return this.employeeRepository.saveAll(contracts);
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+            log.info("Successfully extracted {} active and {} inactive contracts", extractedInactiveContractsMap.size(), extractedContractsMap.size());
+            final Collection<String> newContractNumbers = extractedContractsMap.keySet();
+            log.info("Checking existing contracts");
+            final Collection<Contract> existingContracts = this.contractRepository.fetchAllByNumber(newContractNumbers);
+            if (!existingContracts.isEmpty()) {
+                log.info("Found {} existing contracts", existingContracts.size());
+                existingContracts.parallelStream().forEach(existingContract -> {
+                    final Contract newContract = extractedContractsMap.get(existingContract.getNumber());
+                    if (existingContract.compare(newContract)) {
+                        final Contract mergedContract = this.updateContract.apply(existingContract, newContract);
+                        extractedContractsMap.put(mergedContract.getNumber(), mergedContract);
+                    }
+                });
+            }
+
+            final Collection<Contract> contractsToSave = extractedContractsMap.values();
+            return this.contractRepository.saveAll(contractsToSave);
         } catch (IOException e) {
             throw new AppRuntimeException(e);
         }

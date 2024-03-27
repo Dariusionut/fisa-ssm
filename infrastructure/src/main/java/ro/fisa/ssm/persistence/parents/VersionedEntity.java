@@ -13,6 +13,6 @@ import lombok.Setter;
 @MappedSuperclass
 public class VersionedEntity {
 
-    @Version
-    protected int version;
+//    @Version
+//    protected int version;
 }

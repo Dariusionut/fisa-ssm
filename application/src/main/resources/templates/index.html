@@ -10,7 +10,20 @@
 <main class="container mt-5">
     <h1>Home</h1>
 
-    <button id="file-upload" type="button" class="btn btn-primary">Upload file</button>
+    <p th:text="${#authentication.isAuthenticated()}"></p>
+    <ul>
+        <li sec:authorize="isAuthenticated()" class="nav-item">
+            <a class="nav-link" th:href="@{/logout}">Logout</a>
+        </li>
+        <li sec:authorize="isFullyAuthenticated()">
+            <p th:text="${#authentication.getName()}"></p>
+        </li>
+        <li sec:authorize="isAnonymous()" class="nav-item">
+            <a class="nav-link" th:href="@{/login}">Login</a>
+        </li>
+    </ul>
+
+    <button sec:authorize="${isFullyAuthenticated()}" id="file-upload" type="button" class="btn btn-primary">Upload file</button>
 
     <div id="employees"></div>
 </main>

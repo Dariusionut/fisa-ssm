@@ -12,15 +12,16 @@ import java.util.Optional;
  * Created at 3/24/2024 by Darius
  **/
 public interface ContractRepository {
+    Collection<Contract> fetchAllByNumber(final Collection<String> numbers);
+
     Optional<Contract> fetchByNumber(final String number);
+
     Optional<Contract> fetchByNumber(final String number, ContractContext context);
 
     Page<Contract> fetchContractPage(final Pageable pageable, ContractContext context);
 
     Collection<Contract> fetchByEmployeeCnp(final String cnp,
                                             ContractContext context);
-
-    Contract save(final Contract contract);
 
     Collection<Contract> saveAll(final Collection<Contract> contracts);
 }

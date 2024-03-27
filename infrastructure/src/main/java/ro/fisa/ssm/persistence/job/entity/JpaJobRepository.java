@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ro.fisa.ssm.persistence.contract.entity.ContractEntity;
 
 import java.util.Optional;
 
@@ -19,4 +18,11 @@ public interface JpaJobRepository extends JpaRepository<JobEntity, Integer> {
                      WHERE TRIM(LOWER(j.name)) = TRIM(LOWER(:name))
             """)
     Optional<JobEntity> fetchByName(@Param("name") String name);
+
+    @Query("""
+                     SELECT j.id FROM JobEntity j
+                     WHERE TRIM(LOWER(j.name)) = TRIM(LOWER(:name))
+            """)
+    Optional<Long> fetchIdByName(@Param("name") String name);
+
 }

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 
 >
 
 <header th:fragment="header">
-<!--    <nav class="navbar navbar-expand-lg bg-body-tertiary">-->
+    <!--    <nav class="navbar navbar-expand-lg bg-body-tertiary">-->
     <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body" data-bs-theme="dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Fişa SSM</a>
@@ -23,15 +24,27 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" th:href="@{/}">Acasă</a>
                     </li>
-<!--                    <li class="nav-item">-->
-<!--                        <a class="nav-link" href="#">Despre noi</a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a class="nav-link" href="#">Contact</a>-->
+                    <!--                    <li class="nav-item">-->
+                    <!--                        <a class="nav-link" href="#">Despre noi</a>-->
+                    <!--                    </li>-->
+                    <!--                    <li class="nav-item">-->
+                    <!--                        <a class="nav-link" href="#">Contact</a>-->
                     </li>
-                    <li class="nav-item" >
-                        <a class="nav-link" th:href="@{/login}">Autentificare</a>
+
+                    <li th:if="${#authentication.isAuthenticated()}" class="nav-item">
+<!--                        <a class="nav-link" th:href="@{/logout}">Logout</a>-->
+                        <form th:action="@{/logout}" method="post">
+                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button class="btn btn-link" type="submit">Logout</button>
+                        </form>
                     </li>
+                    <li th:if="${#authentication.isAuthenticated()}">
+                        <p class="text-light" th:text="${#authentication.getName()}"></p>
+                    </li>
+                    <li th:unless="${#authentication.isAuthenticated()}" class="nav-item">
+                        <a class="nav-link" th:href="@{/login}">Login</a>
+                    </li>
+
                 </ul>
             </div>
         </div>

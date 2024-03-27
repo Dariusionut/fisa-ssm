@@ -34,7 +34,11 @@ public class ContractServiceAdapter implements ContractService {
     public Collection<Contract> getByEmployeeCnp(final String cnp,
                                                  ContractContext context
     ) {
-        return this.contractRepository.fetchByEmployeeCnp(cnp, context);
+        final var contracts = this.contractRepository.fetchByEmployeeCnp(cnp, context);
+        if (contracts.isEmpty()) {
+            throw new ContractNotFoundException();
+        }
+        return contracts;
     }
 
     @Override

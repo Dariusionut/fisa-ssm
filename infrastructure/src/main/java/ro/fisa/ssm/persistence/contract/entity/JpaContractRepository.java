@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -35,5 +36,12 @@ public interface JpaContractRepository extends JpaRepository<ContractEntity, Lon
                 WHERE TRIM(e.cnp) = TRIM(:cnp)
             """)
     Stream<ContractEntity> fetchByEmployeeCnp(@Param("cnp") final String cnp);
+
+    @Query("""
+                     SELECT c
+                     FROM ContractEntity c
+                     WHERE c.number IN :numbers
+            """)
+    Stream<ContractEntity> fetchAllByNumbers(@Param("numbers") final Collection<String> numbers);
 
 }

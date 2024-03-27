@@ -10,7 +10,7 @@ import lombok.*;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class Job extends PrimaryModel<Integer> {
+public class Job extends PrimaryModel<Long> {
 
     private String name;
 }

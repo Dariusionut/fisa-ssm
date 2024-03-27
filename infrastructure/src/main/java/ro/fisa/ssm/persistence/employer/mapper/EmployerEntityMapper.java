@@ -14,4 +14,6 @@ public interface EmployerEntityMapper {
     EmployerEntityMapper INSTANCE = Mappers.getMapper(EmployerEntityMapper.class);
 
     Employer toModel(EmployerEntity employer);
+
+    EmployerEntity toEntity(Employer employer);
 }
