@@ -1,8 +1,8 @@
 package ro.fisa.ssm.port.primary;
 
-import org.springframework.data.domain.Page;
 import ro.fisa.ssm.context.ContractContext;
 import ro.fisa.ssm.model.Contract;
+import ro.fisa.ssm.structures.DomainPage;
 
 import java.util.Collection;
 
@@ -11,7 +11,7 @@ import java.util.Collection;
  **/
 public interface ContractService {
 
-    Page<Contract> getContractPage(int number, int size, ContractContext context);
+    DomainPage<Contract> getContractPage(int number, int size, ContractContext context);
 
     Collection<Contract> getByEmployeeCnp(final String cnp,
                                           final ContractContext context

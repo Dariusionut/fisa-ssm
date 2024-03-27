@@ -13,6 +13,7 @@ public class DbConstants {
     public static class Table {
         public static final String JOB = "job";
         public static final String CONTRACT = "contract";
+        public static final String CONTRACT_STATUS = "contract_status";
         public static final String APP_ROLE = "app_role";
         public static final String APP_USER = "app_user";
         public static final String EMPLOYER = "employer";

@@ -1,7 +1,6 @@
 package ro.fisa.ssm.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +9,7 @@ import ro.fisa.ssm.exceptions.ContractNotFoundException;
 import ro.fisa.ssm.model.Contract;
 import ro.fisa.ssm.port.primary.ContractService;
 import ro.fisa.ssm.port.secondary.ContractRepository;
+import ro.fisa.ssm.structures.DomainPage;
 
 import java.util.Collection;
 
@@ -25,7 +25,7 @@ public class ContractServiceAdapter implements ContractService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Contract> getContractPage(int number, int size, ContractContext context) {
+    public DomainPage<Contract> getContractPage(int number, int size, ContractContext context) {
         return this.contractRepository.fetchContractPage(PageRequest.of(number, size), context);
     }
 

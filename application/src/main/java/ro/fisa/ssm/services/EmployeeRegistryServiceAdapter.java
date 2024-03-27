@@ -16,7 +16,6 @@ import ro.fisa.ssm.model.*;
 import ro.fisa.ssm.port.primary.EmployeeRegistryService;
 import ro.fisa.ssm.port.secondary.ContractRepository;
 import ro.fisa.ssm.port.secondary.EmployerRepository;
-import ro.fisa.ssm.utils.AppBooleanUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -76,17 +75,15 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
                     break;
                 }
                 final CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                    log.info("Extracting row {}", row.getRowNum());
                     final Employee extractEmployee = this.extractEmployee(row);
                     extractEmployee.setPassword(this.passwordEncoder.encode(this.initialPassword));
                     final Contract extractedContract = this.extractContract(row, extractEmployee, employerRef.get());
                     final String contractNumber = extractedContract.getNumber();
-                    if (AppBooleanUtils.isTrue(extractedContract.getActiveStatus())) {
+                    if (extractedContract.isNotInactive()) {
                         extractedContractsMap.put(contractNumber, extractedContract);
                     } else {
                         extractedInactiveContractsMap.put(contractNumber, extractedContract);
                     }
-                    log.info("Finished extracting row {}", row.getRowNum());
                 }, this.taskExecutor);
                 futures.add(future);
             }
@@ -117,7 +114,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
         final Contract contract = new Contract();
         contract.setEmployee(employee);
         contract.setEmployer(employer);
-        getCellStringValue(row, ACTIVE_CELL).ifPresentOrElse(contract::setActiveStatus, contract::enableErrors);
+        getCellStringValue(row, ACTIVE_CELL).ifPresentOrElse(contract::setStatus, contract::enableErrors);
         getCellStringValue(row, CONTRACT_NUMBER_CELL).ifPresentOrElse(contract::setNumber, contract::enableErrors);
         getCellStringValue(row, CONTRACT_DURATION_TYPE_CELL).ifPresentOrElse(contract::setFixedTerm, contract::enableErrors);
         getCellStringValue(row, JOB_NAME_CELL).ifPresentOrElse(contract::setJob, contract::enableErrors);
@@ -159,7 +156,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
         if (oldContract.compare(newContract)) {
             oldContract.setJob(job);
             oldContract.setFixedTerm(newContract.getFixedTerm());
-            oldContract.setActiveStatus(newContract.isActiveStatus());
+            oldContract.setStatus(newContract.getStatus());
             oldContract.setBaseSalary(newContract.getBaseSalary());
         } else {
             newContract.setEmployee(oldContract.getEmployee());

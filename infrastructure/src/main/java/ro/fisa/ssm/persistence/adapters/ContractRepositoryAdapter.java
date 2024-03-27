@@ -2,7 +2,6 @@ package ro.fisa.ssm.persistence.adapters;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +17,7 @@ import ro.fisa.ssm.persistence.nationality.entity.NationalityEntity;
 import ro.fisa.ssm.persistence.user.JpaUserRepository;
 import ro.fisa.ssm.persistence.user.entity.UserEntity;
 import ro.fisa.ssm.port.secondary.ContractRepository;
+import ro.fisa.ssm.structures.DomainPage;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -78,9 +78,11 @@ public class ContractRepositoryAdapter implements ContractRepository {
     }
 
     @Override
-    public Page<Contract> fetchContractPage(Pageable pageable, ContractContext context) {
-        return this.jpaContractRepository.fetchContractPage(pageable)
-                .map(mapWithContext(context));
+    public DomainPage<Contract> fetchContractPage(Pageable pageable, ContractContext context) {
+//        return this.jpaContractRepository.fetchContractPage(pageable)
+//                .map(mapWithContext(context));
+        final var contractPage = this.jpaContractRepository.fetchContractPage(pageable);
+        return ContractEntityMapper.INSTANCE.toDomainPage(contractPage, context);
     }
 
 

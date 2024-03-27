@@ -2,6 +2,7 @@ package ro.fisa.ssm.persistence.user.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import ro.fisa.ssm.model.Employee;
 import ro.fisa.ssm.persistence.contract.mapper.ContractEntityMapper;
@@ -18,6 +19,7 @@ public interface UserEntityMapper {
     @Mapping(target = "contracts", source = "contracts", qualifiedByName = "toModelIgnoreEmployee")
     Employee toEmployeeModel(UserEntity userEntity);
 
+    @Named("toEmployeeIgnoreContracts")
     @Mapping(target = "contracts", expression = "java(java.util.Collections.emptyList())")
     Employee toEmployeeIgnoreContracts(UserEntity userEntity);
 

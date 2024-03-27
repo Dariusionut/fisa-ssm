@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ro.fisa.ssm.enums.ContractDuration;
+import ro.fisa.ssm.enums.ContractStatusEnum;
 import ro.fisa.ssm.utils.AppDateUtils;
 
 import java.time.LocalDate;
@@ -16,15 +17,19 @@ import java.time.LocalDate;
 @Setter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class Contract extends SimpleContract {
+public class Contract extends AuditableModel<Long> {
     private Employee employee;
     private Employer employer;
     private Job job;
     private String number;
     private Double baseSalary;
     private Boolean fixedTerm;
-    private Boolean activeStatus;
+    private ContractStatusEnum status;
     private boolean hasErrors;
+
+    public boolean isNotInactive() {
+        return this.status != null && !this.status.equals(ContractStatusEnum.INACTIVE);
+    }
 
     public void enableErrors() {
         this.hasErrors = true;
@@ -47,24 +52,24 @@ public class Contract extends SimpleContract {
         this.job = new Job(jobName);
     }
 
-    @Override
     public void setJob(final Job job) {
         this.job = job;
     }
 
-    @Override
-    public void setActiveStatus(boolean activeStatus) {
-        this.activeStatus = activeStatus;
+    public void setStatus(final ContractStatusEnum status) {
+        this.status = status;
     }
 
-    public void setActiveStatus(final String value) {
+    public void setStatus(final String value) {
         switch (value.trim().toLowerCase()) {
             case "activ":
-                this.activeStatus = true;
+                this.status = ContractStatusEnum.ACTIVE;
                 break;
             case "incetat":
-                this.activeStatus = false;
+                this.status = ContractStatusEnum.INACTIVE;
                 break;
+            case "suspendat":
+                this.status = ContractStatusEnum.SUSPENDED;
             default:
                 this.enableErrors();
                 break;
@@ -80,6 +85,10 @@ public class Contract extends SimpleContract {
         } else {
             this.enableErrors();
         }
+    }
+
+    public void setFixedTerm(final Boolean fixedTerm) {
+        this.fixedTerm = fixedTerm;
     }
 
     public boolean compare(Contract otherContract) {

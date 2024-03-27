@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import ro.fisa.ssm.persistence.contract.listener.ContractEntityListener;
+import ro.fisa.ssm.persistence.contract_status.entity.ContractStatusEntity;
 import ro.fisa.ssm.persistence.employer.entity.EmployerEntity;
 import ro.fisa.ssm.persistence.job.entity.JobEntity;
 import ro.fisa.ssm.persistence.parents.AuditableEntity;
@@ -53,14 +54,19 @@ public class ContractEntity extends AuditableEntity {
     @JoinColumn(name = "fk_employer", referencedColumnName = DbConstants.Column.ID)
     private EmployerEntity employer;
 
+    @ManyToOne(targetEntity = ContractStatusEntity.class,
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE}
+    )
+    @JoinColumn(name = "fk_contract_status", referencedColumnName = DbConstants.Column.ID)
+    private ContractStatusEntity status;
+
     @Column(name = "number")
     private String number;
     @Column(name = "base_salary")
     private Double baseSalary;
     @Column(name = "fixed_term")
     private Boolean fixedTerm;
-    @Column(name = "active_status")
-    private Boolean activeStatus;
 
     @Column(name = "has_errors")
     private boolean hasErrors;

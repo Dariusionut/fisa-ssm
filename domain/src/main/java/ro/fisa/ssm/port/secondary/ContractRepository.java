@@ -1,9 +1,9 @@
 package ro.fisa.ssm.port.secondary;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ro.fisa.ssm.context.ContractContext;
 import ro.fisa.ssm.model.Contract;
+import ro.fisa.ssm.structures.DomainPage;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -18,7 +18,7 @@ public interface ContractRepository {
 
     Optional<Contract> fetchByNumber(final String number, ContractContext context);
 
-    Page<Contract> fetchContractPage(final Pageable pageable, ContractContext context);
+    DomainPage<Contract> fetchContractPage(final Pageable pageable, ContractContext context);
 
     Collection<Contract> fetchByEmployeeCnp(final String cnp,
                                             ContractContext context);

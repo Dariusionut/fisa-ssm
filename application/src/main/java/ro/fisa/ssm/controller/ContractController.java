@@ -1,7 +1,6 @@
 package ro.fisa.ssm.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +11,7 @@ import ro.fisa.ssm.controller.params.ContractApiParams;
 import ro.fisa.ssm.controller.params.mapper.ContractApiParamsMapper;
 import ro.fisa.ssm.model.Contract;
 import ro.fisa.ssm.port.primary.ContractService;
+import ro.fisa.ssm.structures.DomainPage;
 
 import java.util.Collection;
 
@@ -26,12 +26,12 @@ public class ContractController {
     private final ContractService contractService;
 
     @GetMapping
-    public ResponseEntity<Page<Contract>> getAll(@RequestParam(value = "pageNumber", defaultValue = "0") int number,
-                                                 @RequestParam(value = "pageSize", defaultValue = "50") int size,
-                                                 ContractApiParams contractApiParams
+    public ResponseEntity<DomainPage<Contract>> getAll(@RequestParam(value = "pageNumber", defaultValue = "0") int number,
+                                                       @RequestParam(value = "pageSize", defaultValue = "50") int size,
+                                                       ContractApiParams contractApiParams
     ) {
         final ContractContext context = this.createContractContext(contractApiParams);
-        final Page<Contract> contractPage = this.contractService.getContractPage(number, size, context);
+        final DomainPage<Contract> contractPage = this.contractService.getContractPage(number, size, context);
 
         return ResponseEntity.ok(contractPage);
     }
