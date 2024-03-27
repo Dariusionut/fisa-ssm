@@ -127,7 +127,8 @@ public class ContractRepositoryAdapter implements ContractRepository {
                 }
             }));
         }
-        return this.jpaContractRepository.saveAll(contractEntities).parallelStream().map(ContractEntityMapper.INSTANCE::toModel).toList();
+        final Collection<ContractEntity> savedContracts = this.jpaContractRepository.saveAll(contractEntities);
+        return savedContracts.parallelStream().map(ContractEntityMapper.INSTANCE::toModel).toList();
     }
 
     private void checkNationality(UserEntity userEntity) {

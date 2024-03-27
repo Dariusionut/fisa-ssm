@@ -27,10 +27,8 @@ public class Employee extends AuditableModel<Long> {
     private String cnp;
     private String address;
     private String password;
-    private boolean isActive = true;
     private boolean hasErrors;
     private boolean inductionAccepted;
-    private boolean isNewAdded = true;
 
     public @SuppressWarnings("unused") LocalDate getDateOfBirth() {
         if (AppStringUtils.isBlank(this.cnp)) {

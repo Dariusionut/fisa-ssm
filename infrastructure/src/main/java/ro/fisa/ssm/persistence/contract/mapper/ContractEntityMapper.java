@@ -66,13 +66,18 @@ public interface ContractEntityMapper {
     }
 
     @AfterMapping
-    default void afterMapping(@MappingTarget Contract contract,
-                              ContractEntity contractEntity,
-                              @Context ContractContext context) {
+    default void afterMappingToAllModels(@MappingTarget Contract contract,
+                                         ContractEntity contractEntity) {
         final ContractStatusEntity statusEntity = contractEntity.getStatus();
         final String statusStr = statusEntity.getName();
         final ContractStatusEnum statusEnum = ContractStatusEnum.valueOf(statusStr);
         contract.setStatus(statusEnum);
+    }
+
+    @AfterMapping
+    default void afterMapping(@MappingTarget Contract contract,
+                              ContractEntity contractEntity,
+                              @Context ContractContext context) {
         if (!context.ignoreEmployee()) {
             final UserEntity userEntity = contractEntity.getEmployee();
             contract.setEmployee(UserEntityMapper.INSTANCE.toEmployeeIgnoreContracts(userEntity));

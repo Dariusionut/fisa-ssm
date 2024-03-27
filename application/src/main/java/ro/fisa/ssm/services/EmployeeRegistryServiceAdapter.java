@@ -172,7 +172,6 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
         oldEmp.setLastName(newEmp.getLastName());
         oldEmp.setAddress(newEmp.getAddress());
         oldEmp.setNationality(newEmp.getNationality());
-        oldEmp.setActive(newEmp.isActive());
         oldEmp.setHasErrors(newEmp.isHasErrors());
         oldEmp.setInductionAccepted(newEmp.isInductionAccepted());
     };
