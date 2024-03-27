@@ -21,6 +21,7 @@ import ro.fisa.ssm.port.secondary.ContractRepository;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -85,8 +86,8 @@ public class ContractRepositoryAdapter implements ContractRepository {
 
     @Override
     public Collection<Contract> saveAll(Collection<Contract> contracts) {
-        final HashMap<String, UserEntity> employees = new HashMap<>();
-        final HashMap<String, JobEntity> jobs = new HashMap<>();
+        final Map<String, UserEntity> employees = new HashMap<>();
+        final Map<String, JobEntity> jobs = new HashMap<>();
         final Collection<ContractEntity> contractEntities = contracts.parallelStream().map(c -> {
             ContractEntity contract = ContractEntityMapper.INSTANCE.toEntity(c);
             final UserEntity employee = contract.getEmployee();
@@ -136,7 +137,6 @@ public class ContractRepositoryAdapter implements ContractRepository {
                 .orElseGet(() -> this.jpaNationalityRepository.save(nationality));
 
         userEntity.setNationality(saved);
-
 
     }
 }

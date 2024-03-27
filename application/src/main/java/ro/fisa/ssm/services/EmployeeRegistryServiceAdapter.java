@@ -45,69 +45,6 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
     @Value("${spring.security.user.password}")
     private String initialPassword = "initialPassword";
 
-//    @Override
-//    @Transactional
-//    public Collection<Contract> saveEmployeesFromRegistry(AppDocument document) {
-//        log.info("saveEmployeesFromRegistry");
-//        try (Workbook wb = WorkbookFactory.create(document.getInputStream())) {
-//            final Sheet sheet = wb.getSheetAt(0);
-//            final Map<String, Contract> extractedContractsMap = new HashMap<>();
-//            final Map<String, Contract> extractedInactiveContractsMap = new HashMap<>();
-//            log.info("Extracting employer details");
-//            Employer employer = this.extractEmployerDetails(sheet);
-//            final Optional<Employer> employerOptional = this.employerRepository.fetchByName(employer.getName());
-//            if (employerOptional.isPresent()) {
-//                log.info("found existing employer employer = {}", employer.getName());
-//                employer = employerOptional.get();
-//            } else {
-//                log.info("Saving new employer = {}", employer.getName());
-//                employer = this.employerRepository.save(employer);
-//            }
-//            final var rowIterator = sheet.rowIterator();
-//            log.info("Extracting contract details");
-//            final AtomicReference<Employer> employerRef = new AtomicReference<>(employer);
-//            while (rowIterator.hasNext()) {
-//                final Row row = rowIterator.next();
-//                if (row.getRowNum() <= ROW_TO_START) {
-//                    continue;
-//                }
-//                if (isRowEmpty(row)) {
-//                    break;
-//                }
-//                log.info("Extracting row {}", row.getRowNum());
-//                final Employee extractEmployee = this.extractEmployee(row);
-//                extractEmployee.setPassword(this.passwordEncoder.encode(this.initialPassword));
-//                final Contract extractedContract = this.extractContract(row, extractEmployee, employerRef.get());
-//                final String contractNumber = extractedContract.getNumber();
-//                if (AppBooleanUtils.isTrue(extractedContract.getActiveStatus())) {
-//                    extractedContractsMap.put(contractNumber, extractedContract);
-//                } else {
-//                    extractedInactiveContractsMap.put(contractNumber, extractedContract);
-//                }
-//                log.info("Finished extracting row {}", row.getRowNum());
-//            }
-//            log.info("Successfully extracted {} contracts", extractedContractsMap.size());
-//            final Collection<String> newContractNumbers = extractedContractsMap.keySet();
-//            log.info("Checking existing contracts");
-//            final Collection<Contract> existingContracts = this.contractRepository.fetchAllByNumber(newContractNumbers);
-//            if (!existingContracts.isEmpty()) {
-//                log.info("Found {} existing contracts", existingContracts.size());
-//                existingContracts.parallelStream().forEach(existingContract -> {
-//                    final Contract newContract = extractedContractsMap.get(existingContract.getNumber());
-//                    if (existingContract.compare(newContract)) {
-//                        final Contract mergedContract = this.updateContract.apply(existingContract, newContract);
-//                        extractedContractsMap.put(mergedContract.getNumber(), mergedContract);
-//                    }
-//                });
-//            }
-//
-//            final Collection<Contract> contractsToSave = extractedContractsMap.values();
-//            return this.contractRepository.saveAll(contractsToSave);
-//        } catch (IOException e) {
-//            throw new AppRuntimeException(e);
-//        }
-//    }
-
     @Override
     @Transactional
     public Collection<Contract> saveEmployeesFromRegistry(AppDocument document) {
