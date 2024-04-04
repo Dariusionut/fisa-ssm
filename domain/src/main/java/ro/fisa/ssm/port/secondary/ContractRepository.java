@@ -18,7 +18,7 @@ public interface ContractRepository {
 
     Optional<Contract> fetchByNumber(final String number, ContractContext context);
 
-    DomainPage<Contract> fetchContractPage(final Pageable pageable, ContractContext context);
+    DomainPage<Contract> fetchContractPage(final Pageable pageable, String employerName, ContractContext context);
 
     Collection<Contract> fetchByEmployeeCnp(final String cnp,
                                             ContractContext context);

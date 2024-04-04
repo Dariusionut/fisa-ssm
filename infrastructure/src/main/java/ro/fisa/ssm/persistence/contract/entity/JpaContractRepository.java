@@ -26,8 +26,10 @@ public interface JpaContractRepository extends JpaRepository<ContractEntity, Lon
 
     @Query("""
             SELECT c FROM ContractEntity c
+            LEFT JOIN c.employer employer
+            WHERE LOWER(employer.name) LIKE '%' || LOWER(:employerName) || '%'
              """)
-    Page<ContractEntity> fetchContractPage(Pageable pageable);
+    Page<ContractEntity> fetchContractPage(@Param("employerName") String employerName, Pageable pageable);
 
     @Query("""
                 SELECT c

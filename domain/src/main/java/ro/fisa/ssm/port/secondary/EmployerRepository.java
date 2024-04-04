@@ -1,6 +1,8 @@
 package ro.fisa.ssm.port.secondary;
 
+import org.springframework.data.domain.Pageable;
 import ro.fisa.ssm.model.Employer;
+import ro.fisa.ssm.structures.DomainPage;
 
 import java.util.Optional;
 
@@ -9,6 +11,8 @@ import java.util.Optional;
  **/
 
 public interface EmployerRepository {
+
+    DomainPage<Employer> fetchPage(Pageable pageable);
 
     Optional<Employer> fetchByName(final String name);
 

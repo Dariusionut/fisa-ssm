@@ -11,7 +11,7 @@ import java.util.Collection;
  **/
 public interface ContractService {
 
-    DomainPage<Contract> getContractPage(int number, int size, ContractContext context);
+    DomainPage<Contract> getContractPage(int number, int size, String employerName, ContractContext context);
 
     Collection<Contract> getByEmployeeCnp(final String cnp,
                                           final ContractContext context

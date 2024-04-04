@@ -26,9 +26,6 @@
         <org-mapstruct.version>1.5.3.Final</org-mapstruct.version>
         <spring-data-commons.version>3.2.4</spring-data-commons.version>
         <apache.poi.version>5.2.5</apache.poi.version>
-        <!--		Webjars-->
-        <bootstrap.version>5.3.3</bootstrap.version>
-
     </properties>
 
     <dependencyManagement>
@@ -75,12 +72,6 @@
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>${apache.poi.version}</version>
-            </dependency>
-            <!--			Webjars-->
-            <dependency>
-                <groupId>org.webjars</groupId>
-                <artifactId>bootstrap</artifactId>
-                <version>${bootstrap.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

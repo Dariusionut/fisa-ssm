@@ -25,8 +25,8 @@ public class ContractServiceAdapter implements ContractService {
 
     @Override
     @Transactional(readOnly = true)
-    public DomainPage<Contract> getContractPage(int number, int size, ContractContext context) {
-        return this.contractRepository.fetchContractPage(PageRequest.of(number, size), context);
+    public DomainPage<Contract> getContractPage(int number, int size, String employerName, ContractContext context) {
+        return this.contractRepository.fetchContractPage(PageRequest.of(number, size), employerName, context);
     }
 
     @Override

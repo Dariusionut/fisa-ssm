@@ -78,10 +78,8 @@ public class ContractRepositoryAdapter implements ContractRepository {
     }
 
     @Override
-    public DomainPage<Contract> fetchContractPage(Pageable pageable, ContractContext context) {
-//        return this.jpaContractRepository.fetchContractPage(pageable)
-//                .map(mapWithContext(context));
-        final var contractPage = this.jpaContractRepository.fetchContractPage(pageable);
+    public DomainPage<Contract> fetchContractPage(Pageable pageable, String employerName, ContractContext context) {
+        final var contractPage = this.jpaContractRepository.fetchContractPage(employerName, pageable);
         return ContractEntityMapper.INSTANCE.toDomainPage(contractPage, context);
     }
 

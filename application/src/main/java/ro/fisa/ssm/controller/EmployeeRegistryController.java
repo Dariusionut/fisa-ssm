@@ -20,9 +20,9 @@ import java.util.Collection;
  **/
 
 @RestController
-@RequestMapping(path = "api/v1/document")
+@RequestMapping(path = "api/v1/employee-registry")
 @RequiredArgsConstructor
-public class DocumentController {
+public class EmployeeRegistryController {
 
     private final EmployeeRegistryService employeeRegistryService;
 
