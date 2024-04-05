@@ -42,7 +42,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
     private final TaskExecutor taskExecutor;
 
     @Value("${spring.security.user.password}")
-    private String initialPassword = "initialPassword";
+    private String initialPassword;
 
     @Override
     @Transactional

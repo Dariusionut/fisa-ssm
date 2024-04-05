@@ -1,5 +1,6 @@
 package ro.fisa.ssm.security;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,12 +21,17 @@ public class AppUserDetails implements UserDetails {
     @Serial
     private static final long serialVersionUID = 2981621745051469607L;
     private final UserEntity user;
+    private @Getter String jwt;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         final RoleEntity role = this.user.getRole();
-        final String authorityName = String.format("Role_%s", role.getName());
+        final String authorityName = String.format("ROLE_%s", role.getName());
         final SimpleGrantedAuthority sga = new SimpleGrantedAuthority(authorityName);
         return Collections.singletonList(sga);
+    }
+
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
     }
 
     @Override

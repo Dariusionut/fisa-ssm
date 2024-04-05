@@ -1,8 +1,6 @@
 package ro.fisa.ssm.security;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,15 +14,16 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import ro.fisa.ssm.security.filters.AppAuthenticationFilter;
+import ro.fisa.ssm.security.handler.AppLogoutSuccessHandler;
+import ro.fisa.ssm.security.handler.AppLogouthandler;
 
 import static ro.fisa.ssm.enums.AppCookie.JSESSIONID;
 
@@ -44,11 +43,24 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    @Primary
-    public UsernamePasswordAuthenticationFilter authenticationFilter(final AuthenticationManager authenticationManager){
+    @Bean
+    @Primary
+    public LogoutHandler logoutHandler() {
+        return new AppLogouthandler();
+    }
 
-        return new AppAuthenticationFilter(authenticationManager);
+    @Bean
+    @Primary
+    public LogoutSuccessHandler logoutSuccessHandler() {
+        return new AppLogoutSuccessHandler();
+    }
+
+    @Bean
+    @Primary
+    public UsernamePasswordAuthenticationFilter authenticationFilter(final AuthenticationManager authenticationManager,
+                                                                     final ObjectMapper objectMapper) {
+
+        return new AppAuthenticationFilter(authenticationManager, objectMapper);
     }
 
     @Bean
@@ -59,39 +71,24 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(SecurityConfig::customizeSessionManagement)
                 .authenticationManager(authenticationManager)
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/login")
-                        .loginProcessingUrl("/api/v1/login")
-//                        .successForwardUrl("/")
-                        .failureForwardUrl("/login?error=true")
-                )
-//                .logout(SecurityConfig::customizeLogout)
+                .sessionManagement(SecurityConfig::customizeSessionManagement)
+                .logout(this::customizeLogout)
                 .build();
     }
 
-    private static void customizeLogout(LogoutConfigurer<HttpSecurity> logoutConf) {
+    private void customizeLogout(LogoutConfigurer<HttpSecurity> logoutConf) {
         SecurityContextHolder.clearContext();
         logoutConf
-//                .addLogoutHandler(PortalLogoutHandler.getInstance())
-                .addLogoutHandler((request, response, authentication) -> {
-                    try {
-                        request.logout();
-                    } catch (ServletException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .logoutRequestMatcher(new AntPathRequestMatcher("/api/v1/logout"))
-                .logoutUrl("/api/v1/logout")
-
-                .deleteCookies(JSESSIONID.value())
+                .addLogoutHandler(this.logoutHandler())
+                .logoutSuccessHandler(this.logoutSuccessHandler())
+                .logoutRequestMatcher(AppLogouthandler.logoutMatcher)
+                .deleteCookies(JSESSIONID.value(), "JwtCookie")
+                .clearAuthentication(true)
                 .invalidateHttpSession(true);
     }
 
     private static void customizeSessionManagement(SessionManagementConfigurer<HttpSecurity> config) {
-        config.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .sessionFixation().migrateSession()
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(true);
+        config.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
 }
