@@ -42,6 +42,7 @@ spring:
 jwt:
   expiration: 3600
   cookie:
+    client-domain: 'localhost'
     name: JwtAuth
     secure: false
     httpOnly: true

@@ -2,7 +2,10 @@ package ro.fisa.ssm.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ro.fisa.ssm.model.Employer;
 import ro.fisa.ssm.port.primary.EmployerService;
 import ro.fisa.ssm.structures.DomainPage;
@@ -10,7 +13,7 @@ import ro.fisa.ssm.structures.DomainPage;
 /**
  * Created at 4/4/2024 by Darius
  **/
-@CrossOrigin
+//@CrossOrigin
 @RestController
 @RequestMapping(path = "api/v1/employer")
 @RequiredArgsConstructor

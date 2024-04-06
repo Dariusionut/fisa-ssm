@@ -1,6 +1,5 @@
 package ro.fisa.ssm.security.jwt;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,6 +16,7 @@ public class JwtProperties {
     @Getter
     @Component
     public static class Cookie {
+        private @Value("${jwt.cookie.client-domain}") String clientDomain;
         private @Value("${jwt.cookie.name}") String name;
         private @Value("${jwt.cookie.secure}") boolean secure;
         private @Value("${jwt.cookie.httpOnly}") boolean httpOnly;

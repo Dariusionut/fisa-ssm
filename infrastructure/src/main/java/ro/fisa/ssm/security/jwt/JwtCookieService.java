@@ -22,6 +22,7 @@ public final class JwtCookieService {
     public Cookie generateJwtCookie(final UserDetails userDetails) {
         final String jwt = this.jwtService.generateToken(userDetails);
         final Cookie cookie = new Cookie(cookieProperties.getName(), jwt);
+        cookie.setDomain(cookieProperties.getClientDomain());
         cookie.setSecure(cookieProperties.isSecure());
         cookie.setHttpOnly(cookieProperties.isHttpOnly());
         cookie.setPath(cookieProperties.getPath());

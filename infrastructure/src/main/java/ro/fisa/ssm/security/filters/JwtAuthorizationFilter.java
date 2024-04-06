@@ -44,6 +44,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             this.authorize(jwt);
             filterChain.doFilter(request, response);
         } catch (AuthorizationServiceException e) {
+            log.error("Authorization error = {}", e.getMessage());
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write("");
         }
