@@ -39,6 +39,17 @@ spring:
     user:
       password: ${INITIAL_PASSWORD}
 
+jwt:
+  expiration: 3600
+  cookie:
+    name: JwtAuth
+    secure: false
+    httpOnly: true
+    path: /
+    sameSite: strict
+    priority: High
+    maxAge: ${jwt.expiration}
+
 logging:
   level:
     org.hibernate.sql: DEBUG

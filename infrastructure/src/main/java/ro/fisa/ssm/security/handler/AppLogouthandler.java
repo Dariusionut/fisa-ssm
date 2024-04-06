@@ -15,8 +15,6 @@ public class AppLogouthandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-
-
         final SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
         logoutHandler.setClearAuthentication(true);
         logoutHandler.setInvalidateHttpSession(true);

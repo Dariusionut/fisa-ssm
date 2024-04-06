@@ -21,9 +21,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import ro.fisa.ssm.security.filters.AppAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
+import ro.fisa.ssm.security.filters.JwtAuthenticationFilter;
+import ro.fisa.ssm.security.filters.JwtAuthorizationFilter;
 import ro.fisa.ssm.security.handler.AppLogoutSuccessHandler;
 import ro.fisa.ssm.security.handler.AppLogouthandler;
+import ro.fisa.ssm.security.jwt.JwtCookieService;
 
 import static ro.fisa.ssm.enums.AppCookie.JSESSIONID;
 
@@ -58,9 +61,16 @@ public class SecurityConfig {
     @Bean
     @Primary
     public UsernamePasswordAuthenticationFilter authenticationFilter(final AuthenticationManager authenticationManager,
+                                                                     final JwtCookieService jwtCookieService,
                                                                      final ObjectMapper objectMapper) {
 
-        return new AppAuthenticationFilter(authenticationManager, objectMapper);
+        return new JwtAuthenticationFilter(authenticationManager, jwtCookieService, objectMapper);
+    }
+
+    @Bean
+    @Primary
+    public OncePerRequestFilter authorizationFilter(final JwtCookieService cookieService) {
+        return new JwtAuthorizationFilter(cookieService);
     }
 
     @Bean

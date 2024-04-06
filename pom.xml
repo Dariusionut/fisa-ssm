@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.2.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.fisa</groupId>
@@ -25,6 +25,7 @@
         <spring-modulith.version>1.1.2</spring-modulith.version>
         <org-mapstruct.version>1.5.3.Final</org-mapstruct.version>
         <spring-data-commons.version>3.2.4</spring-data-commons.version>
+        <jjwt.version>0.12.5</jjwt.version>
         <apache.poi.version>5.2.5</apache.poi.version>
     </properties>
 
@@ -36,6 +37,21 @@
                 <version>${spring-data-commons.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
             <dependency>
                 <groupId>ro.fisa-ssm</groupId>
                 <artifactId>domain</artifactId>

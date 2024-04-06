@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ro.fisa.ssm.persistence.user.entity.UserEntity;
+import ro.fisa.ssm.persistence.user.projection.UserSecurityDetailProjection;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -22,6 +23,21 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, Long> {
                 WHERE u.cnp = :cnp
             """)
     Optional<UserEntity> findByCnp(@Param("cnp") String cnp);
+
+    @Query("""
+             SELECT new ro.fisa.ssm.persistence.user.projection.UserSecurityDetailProjection(
+             u.firstName,
+             u.lastName,
+             u.cnp,
+             r.name,
+             n.name,
+             u.password
+             ) FROM UserEntity u
+             LEFT JOIN u.role r
+             LEFT JOIN u.nationality n
+             WHERE u.cnp = :cnp
+            """)
+    Optional<UserSecurityDetailProjection> findDetailsByCnp(@Param("cnp") String cnp);
 
     @Query("""
                 SELECT u.id FROM UserEntity u

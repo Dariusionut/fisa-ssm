@@ -1,16 +1,16 @@
 package ro.fisa.ssm.security;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ro.fisa.ssm.persistence.role.entity.RoleEntity;
-import ro.fisa.ssm.persistence.user.entity.UserEntity;
+import ro.fisa.ssm.persistence.user.projection.UserSecurityDetailProjection;
 
 import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created at 3/9/2024 by Darius
@@ -20,18 +20,30 @@ public class AppUserDetails implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = 2981621745051469607L;
-    private final UserEntity user;
-    private @Getter String jwt;
+    private final transient UserSecurityDetailProjection user;
+
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        final RoleEntity role = this.user.getRole();
-        final String authorityName = String.format("ROLE_%s", role.getName());
+    public List<? extends GrantedAuthority> getAuthorities() {
+        final String role = this.user.getRole();
+        final String authorityName = String.format("ROLE_%s", role);
         final SimpleGrantedAuthority sga = new SimpleGrantedAuthority(authorityName);
         return Collections.singletonList(sga);
     }
 
-    public void setJwt(String jwt) {
-        this.jwt = jwt;
+    public String getRole(){
+        return this.user.getRole();
+    }
+
+    public String getFirstName() {
+        return this.user.getFirstName();
+    }
+
+    public String getLastname() {
+        return this.user.getLastName();
+    }
+
+    public String getNationality() {
+        return this.user.getNationality();
     }
 
     @Override
@@ -41,7 +53,7 @@ public class AppUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.user.getCnp();
+        return this.user.getUsername();
     }
 
     @Override

@@ -7,7 +7,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,11 +16,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.MimeTypeUtils;
 import ro.fisa.ssm.exceptions.AppRuntimeException;
+import ro.fisa.ssm.model.PrincipalDetails;
 import ro.fisa.ssm.security.AppUserDetails;
+import ro.fisa.ssm.security.jwt.JwtCookieService;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Security;
+import java.io.PrintWriter;
 
 import static javax.swing.text.html.FormSubmitEvent.MethodType.POST;
 
@@ -29,16 +30,19 @@ import static javax.swing.text.html.FormSubmitEvent.MethodType.POST;
  * Created at 3/9/2024 by Darius
  **/
 @Slf4j
-public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private static final String ENDPOINT = "/api/v1/authentication/login";
     private static final AntPathRequestMatcher REQUEST_MATCHER = new AntPathRequestMatcher(ENDPOINT, POST.name());
 
+    private final JwtCookieService jwtCookieService;
     private final ObjectMapper objectMapper;
 
-    public AppAuthenticationFilter(final AuthenticationManager authenticationManager,
+    public JwtAuthenticationFilter(final AuthenticationManager authenticationManager,
+                                   final JwtCookieService jwtCookieService,
                                    final ObjectMapper objectMapper) {
         super(authenticationManager);
         super.setRequiresAuthenticationRequestMatcher(REQUEST_MATCHER);
+        this.jwtCookieService = jwtCookieService;
         this.objectMapper = objectMapper;
     }
 
@@ -60,12 +64,28 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("Authentication successfully");
         final Object principal = authResult.getPrincipal();
         final AppUserDetails userDetails = (AppUserDetails) principal;
-        final Cookie cookie = new Cookie("JwtCookie", userDetails.getJwt());
+        final Cookie cookie = this.jwtCookieService.generateJwtCookie(userDetails);
         response.addCookie(cookie);
         response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
 
         SecurityContextHolder.getContext().setAuthentication(authResult);
-        chain.doFilter(request, response);
+
+        final PrintWriter writer = response.getWriter();
+
+        final PrincipalDetails details = this.createPrincipalDetails(userDetails);
+        final String principalDetailsJson = this.objectMapper.writeValueAsString(details);
+
+        writer.write(principalDetailsJson);
+    }
+
+    private PrincipalDetails createPrincipalDetails(final AppUserDetails userDetails) {
+        return PrincipalDetails.builder()
+                .firstName(userDetails.getFirstName())
+                .lastName(userDetails.getLastname())
+                .username(userDetails.getUsername())
+                .role(userDetails.getRole())
+                .nationality(userDetails.getNationality())
+                .build();
     }
 
     @Override

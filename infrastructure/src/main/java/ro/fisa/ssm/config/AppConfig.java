@@ -30,9 +30,9 @@ public class AppConfig implements WebMvcConfigurer {
     @Primary
     public AsyncTaskExecutor taskExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setQueueCapacity(150);
-        executor.setMaxPoolSize(40);
-        executor.setCorePoolSize(10);
+        executor.setQueueCapacity(50);
+        executor.setMaxPoolSize(10);
+        executor.setCorePoolSize(2);
         executor.setThreadNamePrefix("FisaSSMTaskExecutor-");
         executor.setThreadNamePrefix("AsyncThread-");
         executor.setTaskDecorator(runnable -> {
@@ -49,10 +49,15 @@ public class AppConfig implements WebMvcConfigurer {
                 }
             };
         });
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setRejectedExecutionHandler(this.callerRunsPolicy());
         executor.initialize();
 
         return new DelegatingSecurityContextAsyncTaskExecutor(executor);
+    }
+
+    @Bean
+    public ThreadPoolExecutor.CallerRunsPolicy callerRunsPolicy() {
+        return new ThreadPoolExecutor.CallerRunsPolicy();
     }
 
     @Configuration

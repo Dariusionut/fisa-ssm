@@ -39,10 +39,6 @@ public class AppAuthenticationManager implements AuthenticationManager {
             throw new BadCredentialsException("Invalid username, password or account might be disabled");
         }
 
-        final String jwt = "dummy";
-
-        userDetails.setJwt(jwt);
-
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }

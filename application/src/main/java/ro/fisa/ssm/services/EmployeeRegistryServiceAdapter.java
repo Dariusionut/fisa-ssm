@@ -56,7 +56,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
             Employer employer = this.extractEmployerDetails(sheet);
             final Optional<Employer> employerOptional = this.employerRepository.fetchByName(employer.getName());
             if (employerOptional.isPresent()) {
-                log.info("found existing employer employer = {}", employer.getName());
+                log.info("found existing employer = {}", employer.getName());
                 employer = employerOptional.get();
             } else {
                 log.info("Saving new employer = {}", employer.getName());
