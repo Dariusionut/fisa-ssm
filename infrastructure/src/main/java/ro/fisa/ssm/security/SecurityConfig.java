@@ -21,6 +21,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ro.fisa.ssm.security.filters.JwtAuthenticationFilter;
 import ro.fisa.ssm.security.filters.JwtAuthorizationFilter;
@@ -28,6 +31,9 @@ import ro.fisa.ssm.security.handler.AppLogoutSuccessHandler;
 import ro.fisa.ssm.security.handler.AppLogouthandler;
 import ro.fisa.ssm.security.jwt.JwtCookieService;
 
+import java.util.List;
+
+import static org.springframework.http.HttpHeaders.*;
 import static ro.fisa.ssm.enums.AppCookie.JSESSIONID;
 
 /**
@@ -95,6 +101,22 @@ public class SecurityConfig {
                 .deleteCookies(JSESSIONID.value(), "JwtCookie")
                 .clearAuthentication(true)
                 .invalidateHttpSession(true);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        final CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "PATCH", "OPTIONS"));
+
+        corsConfiguration.setAllowedHeaders(List.of(ORIGIN, ACCEPT, CONTENT_TYPE, AUTHORIZATION, COOKIE));
+        corsConfiguration.setExposedHeaders(List.of(CONTENT_TYPE));
+        corsConfiguration.setMaxAge(3600L);
+
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
     }
 
     private static void customizeSessionManagement(SessionManagementConfigurer<HttpSecurity> config) {
