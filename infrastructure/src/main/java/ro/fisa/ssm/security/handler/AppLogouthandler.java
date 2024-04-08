@@ -16,9 +16,14 @@ public class AppLogouthandler implements LogoutHandler {
     public static final AntPathRequestMatcher logoutMatcher = new AntPathRequestMatcher("/api/v1/authentication/logout");
 
     private static AppSecurityProperties.JwtProperties.Cookie cookieProperties;
+    private static final Object cookieLock = new Object();
 
-    public static void setCookieProperties(AppSecurityProperties.JwtProperties.Cookie cookieProperties) {
-        AppLogouthandler.cookieProperties = cookieProperties;
+    public static void setCookieProperties(AppSecurityProperties.JwtProperties.Cookie propsToSet) {
+        if (cookieProperties == null) {
+            synchronized (cookieLock) {
+                AppLogouthandler.cookieProperties = propsToSet;
+            }
+        }
     }
 
     @Override
