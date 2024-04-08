@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import ro.fisa.ssm.persistence.user.projection.UserSecurityDetailProjection;
+import ro.fisa.ssm.security.AppSecurityProperties;
 import ro.fisa.ssm.security.AppUserDetails;
 
 import javax.crypto.SecretKey;
@@ -24,7 +25,7 @@ import java.util.Date;
 public class JwtService {
     private static final SecretKey SECRET_KEY = JwtKeyHolder.getSecretKey();
 
-    private final JwtProperties jwtProperties;
+    private final AppSecurityProperties.JwtProperties jwtProperties;
 
     public String generateToken(final UserDetails userDetails) {
         final AppUserDetails details = (AppUserDetails) userDetails;

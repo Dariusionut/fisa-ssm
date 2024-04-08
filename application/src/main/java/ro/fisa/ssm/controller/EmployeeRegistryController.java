@@ -2,6 +2,7 @@ package ro.fisa.ssm.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ro.fisa.ssm.controller.mapper.MultipartFileMapper;
@@ -20,6 +21,7 @@ import java.util.Collection;
 @RequestMapping(path = "api/v1/employee-registry")
 @RequiredArgsConstructor
 @CrossOrigin
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class EmployeeRegistryController {
 
     private final EmployeeRegistryService employeeRegistryService;

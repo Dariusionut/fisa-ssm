@@ -7,10 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import ro.fisa.ssm.persistence.user.projection.UserSecurityDetailProjection;
 
 import java.io.Serial;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created at 3/9/2024 by Darius
@@ -30,7 +28,7 @@ public class AppUserDetails implements UserDetails {
         return Collections.singletonList(sga);
     }
 
-    public String getRole(){
+    public String getRole() {
         return this.user.getRole();
     }
 
@@ -40,6 +38,10 @@ public class AppUserDetails implements UserDetails {
 
     public String getLastname() {
         return this.user.getLastName();
+    }
+
+    public String getFullName() {
+        return String.format("%s %s", this.getLastname(), this.getFirstName());
     }
 
     public String getNationality() {

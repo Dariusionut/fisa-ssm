@@ -4,6 +4,16 @@ server:
     context-path: /fisa-ssm
 
 spring:
+  task:
+    execution:
+      thread-name-prefix: task-fisa-ssm
+      pool:
+        queue-capacity: 50
+        max-size: 20
+        core-size: 10
+        allow-core-thread-timeout: true
+        keep-alive: 30s
+
   servlet:
     multipart:
       max-file-size: 2MB
@@ -36,23 +46,29 @@ spring:
     show-sql: false
     database: postgresql
   security:
+    cors:
+      origin: 'http://localhost:3000'
+      allow-credentials: true
+      allowed-methods: GET, POST, PUT, DELETE, HEAD, PATCH, OPTIONS
+      allowed-headers: Origin, Accept, Content-Type, Cookie
+      expose-headers: Content-Type
+      max-age: 3600
+    jwt:
+      expiration: 3600
+      cookie:
+        client-domain: 'localhost'
+        name: JwtAuth
+        secure: false
+        http-only: true
+        path: /
+        same-site: strict
+        priority: High
+        max-age: ${spring.security.jwt.expiration}
     user:
       password: ${INITIAL_PASSWORD}
 
-jwt:
-  expiration: 3600
-  cookie:
-    client-domain: 'localhost'
-    name: JwtAuth
-    secure: false
-    httpOnly: true
-    path: /
-    sameSite: strict
-    priority: High
-    maxAge: ${jwt.expiration}
-
 logging:
   level:
-    org.hibernate.sql: DEBUG
+    #    org.hibernate.sql: DEBUG
     org.springframework.security: DEBUG
 #    org.springframework.transaction: TRACE

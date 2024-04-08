@@ -1,5 +1,6 @@
 package ro.fisa.ssm.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -15,6 +16,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import ro.fisa.ssm.config.properties.AppTaskExecutorProperties;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -25,16 +27,20 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 @EnableAsync
 @EnableScheduling
+@RequiredArgsConstructor
 public class AppConfig implements WebMvcConfigurer {
+    private final AppTaskExecutorProperties taskExecutorProperties;
+    private final AppTaskExecutorProperties.PoolProperties poolProperties;
     @Bean
     @Primary
     public AsyncTaskExecutor taskExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setQueueCapacity(50);
-        executor.setMaxPoolSize(10);
-        executor.setCorePoolSize(2);
-        executor.setThreadNamePrefix("FisaSSMTaskExecutor-");
-        executor.setThreadNamePrefix("AsyncThread-");
+        executor.setThreadGroupName("FisaSSMTaskExecutor-");
+        executor.setThreadNamePrefix(this.taskExecutorProperties.getThreadNamePrefix());
+        executor.setQueueCapacity(this.poolProperties.getQueueCapacity());
+        executor.setMaxPoolSize(this.poolProperties.getMaxSize());
+        executor.setCorePoolSize(this.poolProperties.getCoreSize());
+        executor.setKeepAliveSeconds(this.poolProperties.getKeepAlive());
         executor.setTaskDecorator(runnable -> {
             SecurityContext context = SecurityContextHolder.getContext();
             final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();

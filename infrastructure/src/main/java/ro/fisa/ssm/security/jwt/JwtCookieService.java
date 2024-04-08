@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import ro.fisa.ssm.security.AppSecurityProperties;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public final class JwtCookieService {
 
     private final JwtService jwtService;
-    private final JwtProperties.Cookie cookieProperties;
+    private final AppSecurityProperties.JwtProperties.Cookie cookieProperties;
 
     public Cookie generateJwtCookie(final UserDetails userDetails) {
         final String jwt = this.jwtService.generateToken(userDetails);

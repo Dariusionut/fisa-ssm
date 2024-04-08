@@ -2,6 +2,7 @@ package ro.fisa.ssm.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ro.fisa.ssm.context.ContractContext;
 import ro.fisa.ssm.controller.params.ContractApiParams;
@@ -24,6 +25,7 @@ public class ContractController {
     private final ContractService contractService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<DomainPage<Contract>> getAll(@RequestParam(value = "pageNumber", defaultValue = "0") int number,
                                                        @RequestParam(value = "pageSize", defaultValue = "50") int size,
                                                        @RequestParam(value = "employerName", defaultValue = "") String employerName,

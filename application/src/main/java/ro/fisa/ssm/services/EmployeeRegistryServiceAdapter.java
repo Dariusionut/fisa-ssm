@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import ro.fisa.ssm.model.*;
 import ro.fisa.ssm.port.primary.EmployeeRegistryService;
 import ro.fisa.ssm.port.secondary.ContractRepository;
 import ro.fisa.ssm.port.secondary.EmployerRepository;
+import ro.fisa.ssm.security.AppSecurityProperties;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,13 +36,11 @@ import static ro.fisa.ssm.utils.EmployeeRegistryUtils.*;
 @Slf4j
 @RequiredArgsConstructor
 public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
+    private final AppSecurityProperties.UserProperties userProperties;
     private final EmployerRepository employerRepository;
     private final ContractRepository contractRepository;
     private final PasswordEncoder passwordEncoder;
     private final TaskExecutor taskExecutor;
-
-    @Value("${spring.security.user.password}")
-    private String initialPassword;
 
     @Override
     @Transactional
@@ -76,7 +74,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
                 }
                 final CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                     final Employee extractEmployee = this.extractEmployee(row);
-                    extractEmployee.setPassword(this.passwordEncoder.encode(this.initialPassword));
+                    extractEmployee.setPassword(this.passwordEncoder.encode(this.userProperties.getPassword()));
                     final Contract extractedContract = this.extractContract(row, extractEmployee, employerRef.get());
                     final String contractNumber = extractedContract.getNumber();
                     if (extractedContract.isNotInactive()) {
@@ -168,6 +166,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
     };
 
     private final BiConsumer<Employee, Employee> updateEmployee = (oldEmp, newEmp) -> {
+        oldEmp.setCnp(newEmp.getCnp());
         oldEmp.setFirstName(newEmp.getFirstName());
         oldEmp.setLastName(newEmp.getLastName());
         oldEmp.setAddress(newEmp.getAddress());
