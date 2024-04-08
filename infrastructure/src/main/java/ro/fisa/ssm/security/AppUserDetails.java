@@ -77,4 +77,8 @@ public class AppUserDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public boolean hasAnyActiveContract() {
+        return true;
+    }
 }
