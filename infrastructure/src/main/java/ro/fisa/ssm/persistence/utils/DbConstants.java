@@ -17,6 +17,7 @@ public class DbConstants {
         public static final String APP_ROLE = "app_role";
         public static final String APP_USER = "app_user";
         public static final String EMPLOYER = "employer";
+        public static final String INDUCTION = "induction";
         public static final String NATIONALITY = "nationality";
 
     }
@@ -26,6 +27,7 @@ public class DbConstants {
 
         public static final String APP_USER = "seq_app_user";
         public static final String EMPLOYER = "seq_employer";
+        public static final String INDUCTION = "seq_induction";
         public static final String JOB = "seq_job";
         public static final String NATIONALITY = "seq_nationality";
         public static final String CONTRACT = "seq_contract";

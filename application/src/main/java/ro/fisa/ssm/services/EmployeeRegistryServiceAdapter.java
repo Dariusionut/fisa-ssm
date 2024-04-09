@@ -44,7 +44,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
 
     @Override
     @Transactional
-    public Collection<Contract> saveEmployeesFromRegistry(AppDocument document) {
+    public Collection<Contract> saveEmployeesFromRegistry(final AppDocument document, final String induction) {
         log.info("saveEmployeesFromRegistry");
         try (Workbook wb = WorkbookFactory.create(document.getInputStream())) {
             final Sheet sheet = wb.getSheetAt(0);

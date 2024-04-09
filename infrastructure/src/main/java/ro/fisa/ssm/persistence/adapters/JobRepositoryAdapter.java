@@ -3,7 +3,7 @@ package ro.fisa.ssm.persistence.adapters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ro.fisa.ssm.model.Job;
-import ro.fisa.ssm.persistence.job.entity.JpaJobRepository;
+import ro.fisa.ssm.persistence.job.JpaJobRepository;
 import ro.fisa.ssm.persistence.job.mapper.JobEntityMapper;
 import ro.fisa.ssm.port.secondary.JobRepository;
 

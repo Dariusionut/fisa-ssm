@@ -1,9 +1,10 @@
-package ro.fisa.ssm.persistence.employer.entity;
+package ro.fisa.ssm.persistence.employer;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ro.fisa.ssm.persistence.employer.entity.EmployerEntity;
 
 import java.util.Optional;
 
