@@ -1,6 +1,7 @@
 package ro.fisa.ssm.model;
 
 import lombok.Builder;
+import ro.fisa.ssm.enums.RoleEnum;
 
 /**
  * Created at 4/7/2024 by Darius
@@ -10,7 +11,8 @@ public record PrincipalDetails(
         String username,
         String firstName,
         String lastName,
-        String role,
+        RoleEnum role,
         String nationality
 ) {
+
 }

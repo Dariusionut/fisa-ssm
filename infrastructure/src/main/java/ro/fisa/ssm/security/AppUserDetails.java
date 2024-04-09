@@ -1,9 +1,9 @@
 package ro.fisa.ssm.security;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ro.fisa.ssm.enums.RoleEnum;
 import ro.fisa.ssm.persistence.user.projection.UserSecurityDetailProjection;
 
 import java.io.Serial;
@@ -13,22 +13,32 @@ import java.util.List;
 /**
  * Created at 3/9/2024 by Darius
  **/
-@RequiredArgsConstructor
 public class AppUserDetails implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = 2981621745051469607L;
     private final transient UserSecurityDetailProjection user;
+    private final boolean hasAnyActiveContract;
+
+    public AppUserDetails(final UserSecurityDetailProjection user) {
+        this.user = user;
+        this.hasAnyActiveContract = user.getRole().equals(RoleEnum.ADMIN);
+    }
+
+    public AppUserDetails(final UserSecurityDetailProjection user, final boolean hasAnyActiveContract) {
+        this.user = user;
+        this.hasAnyActiveContract = !user.getRole().equals(RoleEnum.ADMIN) && hasAnyActiveContract;
+    }
 
     @Override
     public List<? extends GrantedAuthority> getAuthorities() {
-        final String role = this.user.getRole();
+        final String role = this.user.getRole().name();
         final String authorityName = String.format("ROLE_%s", role);
         final SimpleGrantedAuthority sga = new SimpleGrantedAuthority(authorityName);
         return Collections.singletonList(sga);
     }
 
-    public String getRole() {
+    public RoleEnum getRole() {
         return this.user.getRole();
     }
 
@@ -79,6 +89,6 @@ public class AppUserDetails implements UserDetails {
     }
 
     public boolean hasAnyActiveContract() {
-        return true;
+        return this.hasAnyActiveContract;
     }
 }

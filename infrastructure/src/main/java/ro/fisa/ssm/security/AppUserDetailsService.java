@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ro.fisa.ssm.enums.ContractStatusEnum;
+import ro.fisa.ssm.enums.RoleEnum;
 import ro.fisa.ssm.persistence.user.JpaUserRepository;
 
 import java.util.List;
@@ -24,11 +25,15 @@ public class AppUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return this.jpaUserRepository.findDetailsByCnp(username)
                 .map(details -> {
-                    final List<ContractStatusEnum> statuses = this.jpaUserRepository.fetchContractStatuses(username);
-                    final boolean hasActiveContract = statuses.parallelStream().anyMatch(s -> s.equals(ContractStatusEnum.ACTIVE));
-                    return details;
+                    final RoleEnum role = details.getRole();
+                    if (!role.equals(RoleEnum.ADMIN)) {
+                        final List<ContractStatusEnum> statuses = this.jpaUserRepository.fetchContractStatuses(username);
+                        final boolean hasActiveContract = statuses.parallelStream().anyMatch(s -> s.equals(ContractStatusEnum.ACTIVE));
+                        return new AppUserDetails(details, hasActiveContract);
+                    } else {
+                        return new AppUserDetails(details);
+                    }
                 })
-                .map(AppUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password"));
     }
 }

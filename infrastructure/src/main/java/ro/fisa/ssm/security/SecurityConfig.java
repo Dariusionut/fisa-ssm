@@ -83,6 +83,7 @@ public class SecurityConfig {
     public AccessDeniedHandler accessDeniedHandler() {
         return new AppAccessDeniedHandler();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
                                                    AuthenticationManager authenticationManager) throws Exception {

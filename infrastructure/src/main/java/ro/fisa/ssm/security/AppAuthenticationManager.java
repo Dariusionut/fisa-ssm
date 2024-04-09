@@ -6,11 +6,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import ro.fisa.ssm.security.exceptions.NoActiveContractException;
 import ro.fisa.ssm.security.filters.LoginRequest;
 
 /**
@@ -33,9 +33,11 @@ public class AppAuthenticationManager implements AuthenticationManager {
 
         final AppUserDetails userDetails = (AppUserDetails) this.userDetailsService.loadUserByUsername(username);
 
+        if (!userDetails.hasAnyActiveContract()) {
+            throw new NoActiveContractException();
+        }
         final boolean passwordValid = this.passwordEncoder.matches(rawPassword, userDetails.getPassword());
-
-        if (!passwordValid){
+        if (!passwordValid) {
             throw new BadCredentialsException("Invalid username, password or account might be disabled");
         }
 
