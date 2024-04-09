@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile
+    container_name: fisa-ssm-back
+    image: "gcr.io/fisa-ssm/fisa-ssm-backend:latest"
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Europe/Bucharest
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PWD: ${DB_PWD}
+    healthcheck:
+      test: "curl --fail --silent backend:8080/fisa-ssm/actuator/health | grep UP || exit 1"
+      interval: 120s
+      timeout: 20s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+        reservations:
+          cpus: '0.5'
+
