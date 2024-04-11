@@ -2,10 +2,8 @@ package ro.fisa.ssm.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import ro.fisa.ssm.model.Employer;
 import ro.fisa.ssm.port.primary.EmployerService;
 import ro.fisa.ssm.structures.DomainPage;
@@ -17,6 +15,7 @@ import ro.fisa.ssm.structures.DomainPage;
 @RestController
 @RequestMapping(path = "api/v1/employer")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class EmployerController {
 
     private final EmployerService employerService;
@@ -27,5 +26,11 @@ public class EmployerController {
 
         final var page = this.employerService.getEmployers(number, size);
         return ResponseEntity.ok(page);
+    }
+
+    @GetMapping(path = "/{employerName}")
+    public ResponseEntity<Employer> getByName(@PathVariable(name = "employerName") final String employerName) {
+        final Employer employer = this.employerService.getByName(employerName);
+        return ResponseEntity.ok(employer);
     }
 }

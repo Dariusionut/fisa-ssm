@@ -25,4 +25,10 @@ public class EmployerServiceAdapter implements EmployerService {
         final Pageable pageable = PageRequest.of(number, size);
         return this.employerRepository.fetchPage(pageable);
     }
+
+    @Override
+    public Employer getByName(String employerName) {
+        return this.employerRepository.fetchByName(employerName.trim())
+                .orElse(null);
+    }
 }

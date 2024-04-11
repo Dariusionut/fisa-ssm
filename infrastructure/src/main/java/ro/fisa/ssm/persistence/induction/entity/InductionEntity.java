@@ -41,4 +41,10 @@ public class InductionEntity {
 
     @Version
     private int version;
+
+    @PrePersist
+    @PreUpdate
+    private void prePersistAndUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

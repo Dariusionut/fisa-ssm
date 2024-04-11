@@ -3,7 +3,10 @@ package ro.fisa.ssm.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ro.fisa.ssm.context.ContractContext;
 import ro.fisa.ssm.controller.params.ContractApiParams;
 import ro.fisa.ssm.controller.params.mapper.ContractApiParamsMapper;
@@ -19,7 +22,6 @@ import java.util.Collection;
 @RestController
 @RequestMapping(path = "api/v1/contract")
 @RequiredArgsConstructor
-@CrossOrigin
 public class ContractController {
 
     private final ContractService contractService;

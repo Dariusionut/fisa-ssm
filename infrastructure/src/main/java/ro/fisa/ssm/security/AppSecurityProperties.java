@@ -32,7 +32,7 @@ public class AppSecurityProperties {
     @Component
     @ConfigurationProperties(prefix = "spring.security.cors")
     public static class CorsProperties {
-
+        private static final String REGISTER_PATTERN = "/**";
         private String origin;
         private boolean allowCredentials;
         private long maxAge;
@@ -44,7 +44,7 @@ public class AppSecurityProperties {
         public CorsConfigurationSource getCorsConfigurationSource() {
             final CorsConfiguration corsConfiguration = this.getCorsConfiguration();
             final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", corsConfiguration);
+            source.registerCorsConfiguration(REGISTER_PATTERN, corsConfiguration);
             return source;
         }
 

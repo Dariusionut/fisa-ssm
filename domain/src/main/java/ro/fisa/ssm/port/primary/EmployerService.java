@@ -9,4 +9,6 @@ import ro.fisa.ssm.structures.DomainPage;
 public interface EmployerService {
 
     DomainPage<Employer> getEmployers(int number, int size);
+
+    Employer getByName(final String employerName);
 }

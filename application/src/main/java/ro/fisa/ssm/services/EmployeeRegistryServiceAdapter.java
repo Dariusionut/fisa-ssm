@@ -51,15 +51,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
             final Map<String, Contract> extractedContractsMap = new HashMap<>();
             final Map<String, Contract> extractedInactiveContractsMap = new HashMap<>();
             log.info("Extracting employer details");
-            Employer employer = this.extractEmployerDetails(sheet);
-            final Optional<Employer> employerOptional = this.employerRepository.fetchByName(employer.getName());
-            if (employerOptional.isPresent()) {
-                log.info("found existing employer = {}", employer.getName());
-                employer = employerOptional.get();
-            } else {
-                log.info("Saving new employer = {}", employer.getName());
-                employer = this.employerRepository.save(employer);
-            }
+            final Employer employer = this.manageEmployer(sheet, induction);
             final var rowIterator = sheet.rowIterator();
             log.info("Extracting contract details");
             final AtomicReference<Employer> employerRef = new AtomicReference<>(employer);
@@ -108,6 +100,28 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
         }
     }
 
+    private Employer manageEmployer(final Sheet sheet, final String inductionValue) {
+        Employer employer = this.extractEmployerDetails(sheet);
+        final Optional<Employer> employerOptional = this.employerRepository.fetchByName(employer.getName());
+        if (employerOptional.isPresent()) {
+            log.info("found existing employer = {}", employer.getName());
+            employer = employerOptional.get();
+            final Induction existingInduction = employer.getInduction();
+            if (existingInduction == null) {
+                employer.setInduction(new Induction(inductionValue));
+//                employer = this.employerRepository.save(employer);
+            } else {
+                existingInduction.setValue(inductionValue);
+            }
+        } else {
+            log.info("Saving new employer = {}", employer.getName());
+            employer.setInduction(new Induction(inductionValue));
+            employer = this.employerRepository.save(employer);
+        }
+
+        return employer;
+    }
+
     private Contract extractContract(final Row row, final Employee employee, final Employer employer) {
         final Contract contract = new Contract();
         contract.setEmployee(employee);
@@ -153,6 +167,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
 
         if (oldContract.compare(newContract)) {
             oldContract.setJob(job);
+            oldContract.setEmployer(newContract.getEmployer());
             oldContract.setFixedTerm(newContract.getFixedTerm());
             oldContract.setStatus(newContract.getStatus());
             oldContract.setBaseSalary(newContract.getBaseSalary());
