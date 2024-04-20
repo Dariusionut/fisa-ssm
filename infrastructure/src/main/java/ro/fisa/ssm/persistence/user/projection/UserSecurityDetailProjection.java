@@ -14,6 +14,7 @@ import ro.fisa.ssm.enums.RoleEnum;
 @Getter
 @Setter
 public class UserSecurityDetailProjection {
+    private Long id;
     private String firstName;
     private String lastName;
     private String username;

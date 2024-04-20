@@ -38,6 +38,10 @@ public class AppUserDetails implements UserDetails {
         return Collections.singletonList(sga);
     }
 
+    public Long getId() {
+        return this.user.getId();
+    }
+
     public RoleEnum getRole() {
         return this.user.getRole();
     }

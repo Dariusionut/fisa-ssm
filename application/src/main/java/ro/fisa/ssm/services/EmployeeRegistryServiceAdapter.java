@@ -51,7 +51,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
             final Map<String, Contract> extractedContractsMap = new HashMap<>();
             final Map<String, Contract> extractedInactiveContractsMap = new HashMap<>();
             log.info("Extracting employer details");
-            final Employer employer = this.manageEmployer(sheet, induction, hrEmail);
+            final Employer employer = this.manageEmployer(sheet, induction, hrEmail.trim());
             final var rowIterator = sheet.rowIterator();
             log.info("Extracting contract details");
             final AtomicReference<Employer> employerRef = new AtomicReference<>(employer);
@@ -127,11 +127,11 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
         final Contract contract = new Contract();
         contract.setEmployee(employee);
         contract.setEmployer(employer);
-        getCellStringValue(row, ACTIVE_CELL).ifPresentOrElse(contract::setStatus, contract::enableErrors);
-        getCellStringValue(row, CONTRACT_NUMBER_CELL).ifPresentOrElse(contract::setNumber, contract::enableErrors);
-        getCellStringValue(row, CONTRACT_DURATION_TYPE_CELL).ifPresentOrElse(contract::setFixedTerm, contract::enableErrors);
-        getCellStringValue(row, JOB_NAME_CELL).ifPresentOrElse(contract::setJob, contract::enableErrors);
-        getCellDoubleValue(row, SALARY_CELL).ifPresentOrElse(contract::setBaseSalary, contract::enableErrors);
+        getCellStringValue(row, ACTIVE_CELL).ifPresentOrElse(contract::setStatus, () -> contract.enableErrors("Active error"));
+        getCellStringValue(row, CONTRACT_NUMBER_CELL).ifPresentOrElse(contract::setNumber, () -> contract.enableErrors("Contract number error"));
+        getCellStringValue(row, CONTRACT_DURATION_TYPE_CELL).ifPresentOrElse(contract::setFixedTerm, () -> contract.enableErrors("Duration type error"));
+        getCellStringValue(row, JOB_NAME_CELL).ifPresentOrElse(contract::setJob, () -> contract.enableErrors("Job name error"));
+        getCellDoubleValue(row, SALARY_CELL).ifPresentOrElse(contract::setBaseSalary, () -> contract.enableErrors("Salary error"));
         return contract;
     }
 
@@ -172,6 +172,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
             oldContract.setFixedTerm(newContract.getFixedTerm());
             oldContract.setStatus(newContract.getStatus());
             oldContract.setBaseSalary(newContract.getBaseSalary());
+            oldContract.setHasErrors(newContract.isHasErrors());
         } else {
             newContract.setEmployee(oldContract.getEmployee());
             newContract.setEmployer(oldContract.getEmployer());

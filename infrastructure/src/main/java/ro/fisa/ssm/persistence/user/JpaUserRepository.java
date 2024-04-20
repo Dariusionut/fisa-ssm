@@ -28,6 +28,7 @@ public interface JpaUserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("""
              SELECT new ro.fisa.ssm.persistence.user.projection.UserSecurityDetailProjection(
+             u.id,
              u.firstName,
              u.lastName,
              u.cnp,

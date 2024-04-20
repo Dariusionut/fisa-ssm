@@ -38,7 +38,7 @@ public class AppAuthenticationManager implements AuthenticationManager {
         }
         final boolean passwordValid = this.passwordEncoder.matches(rawPassword, userDetails.getPassword());
         if (!passwordValid) {
-            throw new BadCredentialsException("Invalid username, password or account might be disabled");
+            throw new BadCredentialsException("Invalid id, password or account might be disabled");
         }
 
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

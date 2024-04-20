@@ -34,6 +34,6 @@ public class AppUserDetailsService implements UserDetailsService {
                         return new AppUserDetails(details);
                     }
                 })
-                .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password"));
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid id or password"));
     }
 }

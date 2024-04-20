@@ -31,7 +31,7 @@ public class Contract extends AuditableModel<Long> {
         return this.status != null && !this.status.equals(ContractStatusEnum.INACTIVE);
     }
 
-    public void enableErrors() {
+    public void enableErrors(String reason) {
         this.hasErrors = true;
         if (this.employee != null) {
             this.employee.enableErrors();
@@ -70,8 +70,9 @@ public class Contract extends AuditableModel<Long> {
                 break;
             case "suspendat":
                 this.status = ContractStatusEnum.SUSPENDED;
+                break;
             default:
-                this.enableErrors();
+                this.enableErrors("Contract status error");
                 break;
         }
     }
@@ -83,7 +84,7 @@ public class Contract extends AuditableModel<Long> {
         } else if (trimmed.equalsIgnoreCase(ContractDuration.NON_FIXED_TERM.lowercaseValue())) {
             this.fixedTerm = false;
         } else {
-            this.enableErrors();
+            this.enableErrors("Fixed term error");
         }
     }
 

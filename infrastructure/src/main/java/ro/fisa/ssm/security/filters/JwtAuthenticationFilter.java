@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         return PrincipalDetails.builder()
                 .firstName(userDetails.getFirstName())
                 .lastName(userDetails.getLastname())
-                .username(userDetails.getUsername())
+                .id(userDetails.getId())
                 .role(userDetails.getRole())
                 .nationality(userDetails.getNationality())
                 .build();

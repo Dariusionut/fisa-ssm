@@ -8,7 +8,7 @@ import ro.fisa.ssm.enums.RoleEnum;
  **/
 @Builder
 public record PrincipalDetails(
-        String username,
+        Long id,
         String firstName,
         String lastName,
         RoleEnum role,
