@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS employer
     name         VARCHAR(45) UNIQUE NOT NULL,
     cui_cif      VARCHAR(15) UNIQUE NOT NULL,
     caen         VARCHAR(200),
+    hr_email VARCHAR(100),
 --     version INTEGER            NOT NULL DEFAULT 0,
 
     CONSTRAINT employer_pk_id PRIMARY KEY (id),

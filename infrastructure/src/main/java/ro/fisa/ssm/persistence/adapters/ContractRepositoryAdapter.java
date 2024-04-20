@@ -19,6 +19,7 @@ import ro.fisa.ssm.persistence.user.entity.UserEntity;
 import ro.fisa.ssm.port.secondary.ContractRepository;
 import ro.fisa.ssm.structures.DomainPage;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,16 +57,17 @@ public class ContractRepositoryAdapter implements ContractRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<Contract> fetchByNumber(String number) {
-        return this.jpaContractRepository.findByNumber(number)
-                .map(ContractEntityMapper.INSTANCE::toModel);
-    }
-
-    @Override
     public Optional<Contract> fetchByNumber(String number, ContractContext context) {
         return this.jpaContractRepository.findByNumber(number)
                 .map(mapWithContext(context));
+    }
+
+    @Override
+    @Transactional
+    public void acceptInduction(Long contractId) {
+        final ContractEntity contractEntity = this.jpaContractRepository.getReferenceById(contractId);
+        final LocalDateTime now = LocalDateTime.now();
+        contractEntity.setInductionAcceptedAt(now);
     }
 
     @Override
@@ -74,6 +76,14 @@ public class ContractRepositoryAdapter implements ContractRepository {
         return this.jpaContractRepository.fetchByEmployeeCnp(cnp)
                 .parallel()
                 .map(mapWithContext(context))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Collection<Contract> fetchByEmployeeId(long employeeId) {
+        return this.jpaContractRepository.fetchByEmployeeId(employeeId)
+                .parallel()
+                .map(ContractEntityMapper.INSTANCE::toModel)
                 .collect(Collectors.toSet());
     }
 

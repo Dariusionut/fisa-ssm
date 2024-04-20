@@ -47,7 +47,7 @@ public class DbConstants {
         public static final int LENGTH_13 = 13;
 
         public static final int LENGTH_45 = 45;
-        public static final int LENGTH_65 = 65;
+        public static final int LENGTH_100 = 100;
         public static final int LENGTH_200 = 200;
     }
 

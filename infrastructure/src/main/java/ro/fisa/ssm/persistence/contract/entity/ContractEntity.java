@@ -11,6 +11,8 @@ import ro.fisa.ssm.persistence.parents.AuditableEntity;
 import ro.fisa.ssm.persistence.user.entity.UserEntity;
 import ro.fisa.ssm.persistence.utils.DbConstants;
 
+import java.time.LocalDateTime;
+
 /**
  * Created at 3/15/2024 by Darius
  **/
@@ -60,6 +62,9 @@ public class ContractEntity extends AuditableEntity {
     )
     @JoinColumn(name = "fk_contract_status", referencedColumnName = DbConstants.Column.ID)
     private ContractStatusEntity status;
+
+    @Column(name = "induction_accepted_at")
+    private LocalDateTime inductionAcceptedAt;
 
     @Column(name = "number")
     private String number;

@@ -44,4 +44,7 @@ public class EmployerEntity extends VersionedEntity {
     @Column(name = "caen", length = DbConstants.Length.LENGTH_200)
     private String caen;
 
+    @Column(name = "hr_email", length = DbConstants.Length.LENGTH_100)
+    private String hrEmail;
+
 }

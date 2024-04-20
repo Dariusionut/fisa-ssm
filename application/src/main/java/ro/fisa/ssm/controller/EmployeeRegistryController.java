@@ -30,7 +30,7 @@ public class EmployeeRegistryController {
 
     @PostMapping
     public ResponseEntity<Collection<Contract>> uploadEmployeeRegistry(@RequestPart(name = "file") final MultipartFile file,
-                                                                       @RequestPart(name = "induction") final String induction
+                                                                       @RequestPart(name = "induction", required = false) final String induction
     ) throws IOException {
         final AppDocument document = MultipartFileMapper.INSTANCE.toAppDocument(file);
         return ResponseEntity.ok(this.employeeRegistryService.saveEmployeesFromRegistry(document, induction));

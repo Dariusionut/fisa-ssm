@@ -17,6 +17,7 @@ import ro.fisa.ssm.security.AppUserDetails;
  **/
 @Slf4j
 public class AppAccessDeniedHandler implements AccessDeniedHandler {
+    private static final int SB_CAPACITY = 8;
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) {
         response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -24,7 +25,7 @@ public class AppAccessDeniedHandler implements AccessDeniedHandler {
         final Authentication authentication = context.getAuthentication();
         final String uri = request.getRequestURI();
         final String method = request.getMethod();
-        final StringBuilder sb = new StringBuilder(9);
+        final StringBuilder sb = new StringBuilder(SB_CAPACITY);
         sb.append(accessDeniedException.getMessage()).append(" = ");
 
         if (authentication == null) {
@@ -33,7 +34,7 @@ public class AppAccessDeniedHandler implements AccessDeniedHandler {
             sb.append(authentication.getName());
         } else {
             final AppUserDetails details = (AppUserDetails) authentication.getPrincipal();
-            sb.append(details.getFullName()).append(" with cnp: ").append(details.getUsername());
+            sb.append(details.getFullName());
         }
         sb.append(" is trying to access protected resource: ").append(method).append(": ").append(uri);
         log.error(sb.toString());

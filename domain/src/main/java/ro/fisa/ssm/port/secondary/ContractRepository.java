@@ -14,14 +14,16 @@ import java.util.Optional;
 public interface ContractRepository {
     Collection<Contract> fetchAllByNumber(final Collection<String> numbers);
 
-    Optional<Contract> fetchByNumber(final String number);
-
     Optional<Contract> fetchByNumber(final String number, ContractContext context);
+
+    void acceptInduction(final Long contractId);
 
     DomainPage<Contract> fetchContractPage(final Pageable pageable, String employerName, ContractContext context);
 
     Collection<Contract> fetchByEmployeeCnp(final String cnp,
                                             ContractContext context);
+
+    Collection<Contract> fetchByEmployeeId(final long employeeId);
 
     Collection<Contract> saveAll(final Collection<Contract> contracts);
 }

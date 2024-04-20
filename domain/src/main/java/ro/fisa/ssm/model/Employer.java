@@ -18,5 +18,6 @@ public class Employer extends VersionedModel<Long> {
     private String cuiCif;
     private String caen;
     private Induction induction;
+    private String hrEmail;
     private int contractsCount;
 }

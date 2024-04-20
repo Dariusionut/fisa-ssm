@@ -35,6 +35,17 @@ public interface JpaContractRepository extends JpaRepository<ContractEntity, Lon
                 SELECT c
                 FROM ContractEntity c
                 LEFT JOIN c.employee e
+                LEFT JOIN c.employer em
+                LEFT JOIN em.induction i
+                WHERE e.id = :employeeId
+                AND (c.inductionAcceptedAt IS NULL OR c.inductionAcceptedAt < i.updatedAt)
+            """)
+    Stream<ContractEntity> fetchByEmployeeId(@Param("employeeId") final Long employeeId);
+
+    @Query("""
+                SELECT c
+                FROM ContractEntity c
+                LEFT JOIN c.employee e
                 WHERE TRIM(e.cnp) = TRIM(:cnp)
             """)
     Stream<ContractEntity> fetchByEmployeeCnp(@Param("cnp") final String cnp);
