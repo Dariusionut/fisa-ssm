@@ -44,14 +44,14 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
 
     @Override
     @Transactional
-    public Collection<Contract> saveEmployeesFromRegistry(final AppDocument document, final String induction) {
+    public Collection<Contract> saveEmployeesFromRegistry(final AppDocument document, final String induction, final String hrEmail) {
         log.info("saveEmployeesFromRegistry");
         try (Workbook wb = WorkbookFactory.create(document.getInputStream())) {
             final Sheet sheet = wb.getSheetAt(0);
             final Map<String, Contract> extractedContractsMap = new HashMap<>();
             final Map<String, Contract> extractedInactiveContractsMap = new HashMap<>();
             log.info("Extracting employer details");
-            final Employer employer = this.manageEmployer(sheet, induction);
+            final Employer employer = this.manageEmployer(sheet, induction, hrEmail);
             final var rowIterator = sheet.rowIterator();
             log.info("Extracting contract details");
             final AtomicReference<Employer> employerRef = new AtomicReference<>(employer);
@@ -100,12 +100,13 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
         }
     }
 
-    private Employer manageEmployer(final Sheet sheet, final String inductionValue) {
+    private Employer manageEmployer(final Sheet sheet, final String inductionValue, final String hrEmail) {
         Employer employer = this.extractEmployerDetails(sheet);
         final Optional<Employer> employerOptional = this.employerRepository.fetchByName(employer.getName());
         if (employerOptional.isPresent()) {
             log.info("found existing employer = {}", employer.getName());
             employer = employerOptional.get();
+            employer.setHrEmail(hrEmail);
             final Induction existingInduction = employer.getInduction();
             if (existingInduction == null) {
                 employer.setInduction(new Induction(inductionValue));
@@ -115,6 +116,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
         } else {
             log.info("Saving new employer = {}", employer.getName());
             employer.setInduction(new Induction(inductionValue));
+            employer.setHrEmail(hrEmail);
             employer = this.employerRepository.save(employer);
         }
 

@@ -10,5 +10,5 @@ import java.util.Collection;
  **/
 public interface EmployeeRegistryService {
 
-    Collection<Contract> saveEmployeesFromRegistry(AppDocument document, final String induction);
+    Collection<Contract> saveEmployeesFromRegistry(AppDocument document, final String induction, final String hrEmail);
 }
