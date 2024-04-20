@@ -1,5 +1,6 @@
 package ro.fisa.ssm.port.secondary;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ro.fisa.ssm.context.ContractContext;
 import ro.fisa.ssm.model.Contract;
@@ -23,7 +24,7 @@ public interface ContractRepository {
     Collection<Contract> fetchByEmployeeCnp(final String cnp,
                                             ContractContext context);
 
-    Collection<Contract> fetchByEmployeeId(final long employeeId);
+    Page<Contract> fetchByEmployeeId(final long employeeId, Pageable pageable);
 
     Collection<Contract> saveAll(final Collection<Contract> contracts);
 }

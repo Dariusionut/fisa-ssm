@@ -2,15 +2,20 @@ package ro.fisa.ssm.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.fisa.ssm.model.*;
+import ro.fisa.ssm.model.Employee;
+import ro.fisa.ssm.model.Employer;
+import ro.fisa.ssm.model.Induction;
+import ro.fisa.ssm.model.InductionDetail;
 import ro.fisa.ssm.port.primary.UserService;
 import ro.fisa.ssm.port.secondary.ContractRepository;
 import ro.fisa.ssm.port.secondary.UserRepository;
+import ro.fisa.ssm.structures.DomainPage;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Created at 3/18/2024 by Darius
@@ -31,22 +36,21 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<InductionDetail> fetchUnacceptedInductions(final long employeeId) {
-        final Collection<Contract> contracts = this.contractRepository.fetchByEmployeeId(employeeId);
-        final Collection<InductionDetail> inductionDetails = new LinkedList<>();
-
-        contracts.parallelStream().forEach(contract -> {
-            final InductionDetail inductionDetail = new InductionDetail();
-            final Employer employer = contract.getEmployer();
-            final Induction induction = employer.getInduction();
-            inductionDetail.setLastUpdate(induction.getUpdatedAt());
-            inductionDetail.setEmployerName(employer.getName());
-            inductionDetail.setContractNo(contract.getNumber());
-            inductionDetail.setContractId(contract.getId());
-            inductionDetail.setAccepted(false);
-            inductionDetails.add(inductionDetail);
-        });
-        return inductionDetails;
+    public DomainPage<InductionDetail> fetchUnacceptedInductions(final long employeeId, int number, int size) {
+        final Page<InductionDetail> detailPage = this.contractRepository
+                .fetchByEmployeeId(employeeId, PageRequest.of(number, size))
+                .map(contract -> {
+                    final InductionDetail inductionDetail = new InductionDetail();
+                    final Employer employer = contract.getEmployer();
+                    final Induction induction = employer.getInduction();
+                    inductionDetail.setLastUpdate(induction.getUpdatedAt());
+                    inductionDetail.setEmployerName(employer.getName());
+                    inductionDetail.setContractNo(contract.getNumber());
+                    inductionDetail.setContractId(contract.getId());
+                    inductionDetail.setAccepted(false);
+                    return inductionDetail;
+                });
+        return DomainPage.fromPage(detailPage);
     }
 
     @Override

@@ -40,7 +40,7 @@ public interface JpaContractRepository extends JpaRepository<ContractEntity, Lon
                 WHERE e.id = :employeeId
                 AND (c.inductionAcceptedAt IS NULL OR c.inductionAcceptedAt < i.updatedAt)
             """)
-    Stream<ContractEntity> fetchByEmployeeId(@Param("employeeId") final Long employeeId);
+    Page<ContractEntity> fetchByEmployeeId(@Param("employeeId") final Long employeeId, Pageable pageable);
 
     @Query("""
                 SELECT c

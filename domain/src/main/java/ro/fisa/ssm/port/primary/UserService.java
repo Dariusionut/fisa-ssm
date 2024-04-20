@@ -2,6 +2,7 @@ package ro.fisa.ssm.port.primary;
 
 import ro.fisa.ssm.model.Employee;
 import ro.fisa.ssm.model.InductionDetail;
+import ro.fisa.ssm.structures.DomainPage;
 
 import java.util.Collection;
 
@@ -12,7 +13,7 @@ public interface UserService {
 
     Collection<Employee> getEmployees();
 
-    Collection<InductionDetail> fetchUnacceptedInductions(long employeeId);
+    DomainPage<InductionDetail> fetchUnacceptedInductions(long employeeId, int number, int size);
 
     void acceptInduction(final Long contractId);
 }

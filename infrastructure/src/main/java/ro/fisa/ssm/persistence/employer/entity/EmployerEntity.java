@@ -30,7 +30,7 @@ public class EmployerEntity extends VersionedEntity {
 
     @OneToOne(
             targetEntity = InductionEntity.class,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.DETACH},
+            cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.REFRESH},
             fetch = FetchType.LAZY
     )
     @JoinColumn(name = "fk_induction", referencedColumnName = DbConstants.Column.ID)

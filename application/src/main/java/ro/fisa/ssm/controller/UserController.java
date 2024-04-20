@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ro.fisa.ssm.model.Employee;
 import ro.fisa.ssm.model.InductionDetail;
 import ro.fisa.ssm.port.primary.UserService;
+import ro.fisa.ssm.structures.DomainPage;
 
 import java.util.Collection;
 
@@ -28,8 +29,11 @@ public class UserController {
 
     @GetMapping(path = "/unaccepted-inductions")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_EMPLOYEE')")
-    public ResponseEntity<Collection<InductionDetail>> getUnacceptedInductions(@RequestParam("employeeId") final long employeeId) {
-        final Collection<InductionDetail> inductionDetails = this.userService.fetchUnacceptedInductions(employeeId);
+    public ResponseEntity<DomainPage<InductionDetail>> getUnacceptedInductions(@RequestParam("employeeId") final long employeeId,
+                                                                               @RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
+                                                                               @RequestParam(value = "pageSize", defaultValue = "50") final int pageSize
+    ) {
+        final DomainPage<InductionDetail> inductionDetails = this.userService.fetchUnacceptedInductions(employeeId, pageNumber, pageSize);
         return ResponseEntity.ok(inductionDetails);
     }
 

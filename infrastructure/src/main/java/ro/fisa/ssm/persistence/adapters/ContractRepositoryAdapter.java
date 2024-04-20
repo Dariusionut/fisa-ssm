@@ -2,6 +2,7 @@ package ro.fisa.ssm.persistence.adapters;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,11 +81,9 @@ public class ContractRepositoryAdapter implements ContractRepository {
     }
 
     @Override
-    public Collection<Contract> fetchByEmployeeId(long employeeId) {
-        return this.jpaContractRepository.fetchByEmployeeId(employeeId)
-                .parallel()
-                .map(ContractEntityMapper.INSTANCE::toModel)
-                .collect(Collectors.toSet());
+    public Page<Contract> fetchByEmployeeId(long employeeId, Pageable pageable) {
+        return this.jpaContractRepository.fetchByEmployeeId(employeeId, pageable)
+                .map(ContractEntityMapper.INSTANCE::toModel);
     }
 
     @Override
@@ -95,6 +94,7 @@ public class ContractRepositoryAdapter implements ContractRepository {
 
 
     @Override
+    @Transactional
     public Collection<Contract> saveAll(Collection<Contract> contracts) {
         final Map<String, UserEntity> employees = new HashMap<>();
         final Map<String, JobEntity> jobs = new HashMap<>();
@@ -117,7 +117,7 @@ public class ContractRepositoryAdapter implements ContractRepository {
         log.info("Saving employees..");
         if (!employees.isEmpty()) {
             Collection<UserEntity> savedEmployees = this.jpaUserRepository.saveAll(employees.values());
-            contractEntities.parallelStream().forEach(contractToSave -> savedEmployees.parallelStream().forEach(savedEmployee -> {
+            contractEntities.forEach(contractToSave -> savedEmployees.parallelStream().forEach(savedEmployee -> {
                 final UserEntity contractEmp = contractToSave.getEmployee();
                 if (savedEmployee.getCnp().trim().equalsIgnoreCase(contractEmp.getCnp())) {
                     contractToSave.setEmployee(savedEmployee);
@@ -128,7 +128,7 @@ public class ContractRepositoryAdapter implements ContractRepository {
 
         if (!jobs.isEmpty()) {
             final Collection<JobEntity> savedJobs = this.jpaJobRepository.saveAll(jobs.values());
-            contractEntities.parallelStream().forEach(contractToSave -> savedJobs.parallelStream().forEach(savedJob -> {
+            contractEntities.forEach(contractToSave -> savedJobs.parallelStream().forEach(savedJob -> {
                 final JobEntity contractJob = contractToSave.getJob();
                 if (savedJob.getName().equalsIgnoreCase(contractJob.getName())) {
                     contractToSave.setJob(savedJob);

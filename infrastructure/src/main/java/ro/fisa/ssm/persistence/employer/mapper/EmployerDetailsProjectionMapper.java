@@ -18,6 +18,7 @@ import java.util.Collection;
 public interface EmployerDetailsProjectionMapper {
     EmployerDetailsProjectionMapper INSTANCE = Mappers.getMapper(EmployerDetailsProjectionMapper.class);
 
+    @Mapping(target = "id", source = "employer.id")
     @Mapping(target = "name", source = "employer.name")
     @Mapping(target = "caen", source = "employer.caen")
     @Mapping(target = "contractsCount", source = "contractCount")

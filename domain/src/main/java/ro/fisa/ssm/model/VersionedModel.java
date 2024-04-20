@@ -14,5 +14,5 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class VersionedModel<T extends Number> extends PrimaryModel<T> {
 
-    private int version = 0;
+    protected int version = 0;
 }

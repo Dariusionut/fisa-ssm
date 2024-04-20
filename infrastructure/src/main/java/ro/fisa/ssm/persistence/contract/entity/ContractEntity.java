@@ -51,7 +51,7 @@ public class ContractEntity extends AuditableEntity {
 
     @ManyToOne(targetEntity = EmployerEntity.class,
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE}
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH}
     )
     @JoinColumn(name = "fk_employer", referencedColumnName = DbConstants.Column.ID)
     private EmployerEntity employer;
