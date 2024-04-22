@@ -27,17 +27,16 @@ public class UserController {
         return ResponseEntity.ok(this.userService.getEmployees());
     }
 
-    @GetMapping(path = "/unaccepted-inductions")
+    @GetMapping(path = "/induction/unaccepted")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_EMPLOYEE')")
-    public ResponseEntity<DomainPage<InductionDetail>> getUnacceptedInductions(@RequestParam("employeeId") final long employeeId,
-                                                                               @RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
+    public ResponseEntity<DomainPage<InductionDetail>> getUnacceptedInductions(@RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
                                                                                @RequestParam(value = "pageSize", defaultValue = "50") final int pageSize
     ) {
-        final DomainPage<InductionDetail> inductionDetails = this.userService.fetchUnacceptedInductions(employeeId, pageNumber, pageSize);
+        final DomainPage<InductionDetail> inductionDetails = this.userService.fetchUnacceptedInductions(pageNumber, pageSize);
         return ResponseEntity.ok(inductionDetails);
     }
 
-    @PutMapping(path = "/unaccepted-inductions")
+    @PutMapping(path = "/induction/unaccepted")
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<Void> acceptInduction(@RequestParam("contractId") final long contractId) {
         this.userService.acceptInduction(contractId);

@@ -9,6 +9,7 @@ import ro.fisa.ssm.enums.ContractStatusEnum;
 import ro.fisa.ssm.utils.AppDateUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Created at 3/18/2024 by Darius
@@ -25,6 +26,7 @@ public class Contract extends AuditableModel<Long> {
     private Double baseSalary;
     private Boolean fixedTerm;
     private ContractStatusEnum status;
+    private LocalDateTime inductionAcceptedAt;
     private boolean hasErrors;
 
     public boolean isNotInactive() {

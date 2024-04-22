@@ -13,7 +13,7 @@ public interface UserService {
 
     Collection<Employee> getEmployees();
 
-    DomainPage<InductionDetail> fetchUnacceptedInductions(long employeeId, int number, int size);
+    DomainPage<InductionDetail> fetchUnacceptedInductions(int number, int size);
 
     void acceptInduction(final Long contractId);
 }

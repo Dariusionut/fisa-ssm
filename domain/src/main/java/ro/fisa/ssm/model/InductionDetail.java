@@ -16,4 +16,5 @@ public class InductionDetail {
     private String contractNo;
     private String employerName;
     private LocalDateTime lastUpdate;
+    private EmployeeSimpleDetails employee;
 }

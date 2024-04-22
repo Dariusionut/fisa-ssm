@@ -35,6 +35,7 @@ public class JwtService {
                 .claim("sub", details.getUsername())
                 .claim("iat", Date.from(now))
                 .claim("exp", Date.from(expiryDate))
+                .claim("id", details.getId())
                 .claim("firstName", details.getFirstName())
                 .claim("lastName", details.getLastname())
                 .claim("nationality", details.getNationality())
@@ -64,6 +65,7 @@ public class JwtService {
             final String roleClaim = extractRole(jwt);
             final String roleWithoutPrefix = roleClaim.startsWith("ROLE_") ? roleClaim.substring(5) : roleClaim;
             final UserSecurityDetailProjection detailProjection = UserSecurityDetailProjection.builder()
+                    .id(claims.get("id", Long.class))
                     .firstName(claims.get("firstName", String.class))
                     .lastName(claims.get("lastName", String.class))
                     .username(claims.getSubject())

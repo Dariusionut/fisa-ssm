@@ -4,17 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.fisa.ssm.model.Employee;
-import ro.fisa.ssm.model.Employer;
-import ro.fisa.ssm.model.Induction;
-import ro.fisa.ssm.model.InductionDetail;
+import ro.fisa.ssm.model.*;
 import ro.fisa.ssm.port.primary.UserService;
 import ro.fisa.ssm.port.secondary.ContractRepository;
 import ro.fisa.ssm.port.secondary.UserRepository;
+import ro.fisa.ssm.security.AppUserDetails;
 import ro.fisa.ssm.structures.DomainPage;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 /**
@@ -36,18 +38,32 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public DomainPage<InductionDetail> fetchUnacceptedInductions(final long employeeId, int number, int size) {
+    public DomainPage<InductionDetail> fetchUnacceptedInductions(int number, int size) {
+        final SecurityContext context = SecurityContextHolder.getContext();
+        final Authentication authentication = context.getAuthentication();
+        final AppUserDetails details = (AppUserDetails) authentication.getPrincipal();
+        final long employeeId = details.getId();
         final Page<InductionDetail> detailPage = this.contractRepository
                 .fetchByEmployeeId(employeeId, PageRequest.of(number, size))
                 .map(contract -> {
                     final InductionDetail inductionDetail = new InductionDetail();
+                    final EmployeeSimpleDetails employeeSimpleDetails = new EmployeeSimpleDetails();
+                    inductionDetail.setEmployee(employeeSimpleDetails);
                     final Employer employer = contract.getEmployer();
+                    final Employee employee = contract.getEmployee();
+                    employeeSimpleDetails.setFirstName(employee.getFirstName());
+                    employeeSimpleDetails.setLastName(employee.getLastName());
+                    employeeSimpleDetails.setId(employee.getId());
+                    employeeSimpleDetails.setCreatedAt(employee.getCreatedAt());
+                    employeeSimpleDetails.setUpdatedAt(employee.getUpdatedAt());
                     final Induction induction = employer.getInduction();
                     inductionDetail.setLastUpdate(induction.getUpdatedAt());
                     inductionDetail.setEmployerName(employer.getName());
                     inductionDetail.setContractNo(contract.getNumber());
                     inductionDetail.setContractId(contract.getId());
-                    inductionDetail.setAccepted(false);
+                    final LocalDateTime lastValidate = contract.getInductionAcceptedAt();
+                    final boolean isAccepted = lastValidate == null || lastValidate.isBefore(induction.getUpdatedAt());
+                    inductionDetail.setAccepted(!isAccepted);
                     return inductionDetail;
                 });
         return DomainPage.fromPage(detailPage);

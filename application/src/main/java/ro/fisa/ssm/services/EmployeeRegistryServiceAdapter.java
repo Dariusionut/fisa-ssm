@@ -49,6 +49,7 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
         try (Workbook wb = WorkbookFactory.create(document.getInputStream())) {
             final Sheet sheet = wb.getSheetAt(0);
             final Map<String, Contract> extractedContractsMap = new HashMap<>();
+            final Map<String, Contract> existingContractsMap = new HashMap<>();
             final Map<String, Contract> extractedInactiveContractsMap = new HashMap<>();
             log.info("Extracting employer details");
             final Employer employer = this.manageEmployer(sheet, induction, hrEmail.trim());
@@ -84,17 +85,21 @@ public class EmployeeRegistryServiceAdapter implements EmployeeRegistryService {
             final Collection<Contract> existingContracts = this.contractRepository.fetchAllByNumber(newContractNumbers);
             if (!existingContracts.isEmpty()) {
                 log.info("Found {} existing contracts", existingContracts.size());
-                existingContracts.parallelStream().forEach(existingContract -> {
+                existingContracts.forEach(existingContract -> {
                     final Contract newContract = extractedContractsMap.get(existingContract.getNumber());
                     if (existingContract.compare(newContract)) {
+                        existingContractsMap.put(newContract.getNumber(), newContract);
                         final Contract mergedContract = this.updateContract.apply(existingContract, newContract);
                         extractedContractsMap.put(mergedContract.getNumber(), mergedContract);
                     }
                 });
             }
 
-            final Collection<Contract> contractsToSave = extractedContractsMap.values();
-            return this.contractRepository.saveAll(contractsToSave);
+            final Collection<Contract> contracts = this.contractRepository.saveAll(extractedContractsMap.values());
+            existingContractsMap.clear();
+            extractedContractsMap.clear();
+            extractedInactiveContractsMap.clear();
+            return contracts;
         } catch (IOException e) {
             throw new AppRuntimeException(e);
         }

@@ -28,6 +28,7 @@ public class EmployerController {
         return ResponseEntity.ok(page);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_EMPLOYEE')")
     @GetMapping(path = "/{employerName}")
     public ResponseEntity<Employer> getByName(@PathVariable(name = "employerName") final String employerName) {
         final Employer employer = this.employerService.getByName(employerName);
